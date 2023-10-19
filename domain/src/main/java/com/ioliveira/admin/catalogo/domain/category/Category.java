@@ -1,10 +1,10 @@
 package com.ioliveira.admin.catalogo.domain.category;
 
-import java.time.Instant;
-import java.util.UUID;
+import com.ioliveira.admin.catalogo.domain.AggregateRoot;
 
-public class Category {
-    private String id;
+import java.time.Instant;
+
+public class Category extends AggregateRoot<CategoryID> {
     private String name;
     private String description;
     private boolean active;
@@ -13,14 +13,14 @@ public class Category {
     private Instant deletedAt;
 
     private Category(
-            final String id,
+            final CategoryID id,
             final String name,
             final String description,
             final boolean active,
             final Instant createdAt,
             final Instant updatedAt,
             final Instant deletedAt) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.description = description;
         this.active = active;
@@ -30,13 +30,12 @@ public class Category {
     }
 
     public static Category newCategory(final String name, final String description, final boolean active) {
-        final String id = UUID.randomUUID().toString();
         final Instant now = Instant.now();
 
-        return new Category(id, name, description, active, now, now, null);
+        return new Category(CategoryID.unique(), name, description, active, now, now, null);
     }
 
-    public String getId() {
+    public CategoryID getId() {
         return id;
     }
 
