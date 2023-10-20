@@ -4,16 +4,20 @@ import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
 import com.ioliveira.admin.catalogo.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CategoryUnitTest {
 
     @Test
-    public void givenValidParams_whenCallNewCategory_thenInstantiateACategory() {
+    public void givenValidParams_whenCallsNewCategory_thenInstantiateACategory() {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
@@ -32,7 +36,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenInvalidNullName_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
+    public void givenInvalidNullName_whenCallsNewCategoryAndValidate_thenShouldReceiveError() {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
         final var expectedErrorMessage = "'name' should not be null";
@@ -47,7 +51,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenInvalidEmptyName_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
+    public void givenInvalidEmptyName_whenCallsNewCategoryAndValidate_thenShouldReceiveError() {
         final var expectedName = "  ";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
@@ -63,7 +67,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenInvalidNameLengthLessThan3_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
+    public void givenInvalidNameLengthLessThan3_whenCallsNewCategoryAndValidate_thenShouldReceiveError() {
         final var expectedName = "fi ";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
@@ -79,7 +83,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenInvalidNameLengthMoreThan255_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
+    public void givenInvalidNameLengthMoreThan255_whenCallsNewCategoryAndValidate_thenShouldReceiveError() {
         final var expectedName = """
                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer
@@ -99,7 +103,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenValidEmptyDescription_whenCallNewCategory_thenInstantiateACategory() {
+    public void givenValidEmptyDescription_whenCallsNewCategory_thenInstantiateACategory() {
         final var expectedName = "Filmes";
         final var expectedDescription = "  ";
         final var expectedIsActive = true;
@@ -118,7 +122,7 @@ public class CategoryUnitTest {
     }
 
     @Test
-    public void givenValidFalseIsActive_whenCallNewCategory_thenInstantiateACategory() {
+    public void givenValidFalseIsActive_whenCallsNewCategory_thenInstantiateACategory() {
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
@@ -134,5 +138,63 @@ public class CategoryUnitTest {
         assertNotNull(category.getCreatedAt());
         assertNotNull(category.getUpdatedAt());
         assertNotNull(category.getDeletedAt());
+    }
+
+    @Test
+    public void givenValidActiveCategory_whenCallsDeactivate_thenReturnCategoryInactivated() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+
+        final var category = Category.newCategory(expectedName, expectedDescription, true);
+
+        assertDoesNotThrow(() -> category.validate(new ThrowsValidationHandler()));
+
+        final Instant createdAt = category.getCreatedAt();
+        final Instant updatedAt = category.getUpdatedAt();
+
+        assertTrue(category.isActive());
+        assertNull(category.getDeletedAt());
+
+        final var actualCategory = category.deactivate();
+
+        assertDoesNotThrow(() -> category.validate(new ThrowsValidationHandler()));
+
+        assertEquals(category.getId(), actualCategory.getId());
+        assertEquals(category.getName(), actualCategory.getName());
+        assertEquals(category.getDescription(), actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(createdAt, category.getCreatedAt());
+        assertTrue(category.getUpdatedAt().isAfter(updatedAt));
+        assertNotNull(category.getDeletedAt());
+    }
+
+    @Test
+    public void givenValidInactiveCategory_whenCallsActivate_thenReturnCategoryActivated() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final var category = Category.newCategory(expectedName, expectedDescription, false);
+
+        assertDoesNotThrow(() -> category.validate(new ThrowsValidationHandler()));
+
+        final Instant createdAt = category.getCreatedAt();
+        final Instant updatedAt = category.getUpdatedAt();
+
+        assertFalse(category.isActive());
+        assertNotNull(category.getDeletedAt());
+
+        final var actualCategory = category.activate();
+
+        assertDoesNotThrow(() -> category.validate(new ThrowsValidationHandler()));
+
+        assertEquals(category.getId(), actualCategory.getId());
+        assertEquals(category.getName(), actualCategory.getName());
+        assertEquals(category.getDescription(), actualCategory.getDescription());
+        assertEquals(expectedIsActive, actualCategory.isActive());
+        assertEquals(createdAt, category.getCreatedAt());
+        assertTrue(category.getUpdatedAt().isAfter(updatedAt));
+        assertNull(category.getDeletedAt());
     }
 }
