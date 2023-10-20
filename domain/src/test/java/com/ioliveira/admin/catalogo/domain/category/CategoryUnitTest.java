@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.category;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,5 +26,21 @@ public class CategoryUnitTest {
         assertNotNull(category.getCreatedAt());
         assertNotNull(category.getUpdatedAt());
         assertNull(category.getDeletedAt());
+    }
+
+    @Test
+    public void givenInvalidNullName_whenCallNewCategoryAndValidate_thenShouldReceiveError() {
+        final String expectedName = null;
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+        final var expectedErrorMessage = "'name' should not be null";
+        final var expectedErrorCount = 1;
+
+        final var category = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
+
+        final var exception = Assertions.assertThrows(DomainException.class, () -> category.validate());
+
+        assertEquals(expectedErrorMessage, exception.getErrors().get(0));
+        assertEquals(expectedErrorCount, exception.getErrors().size());
     }
 }
