@@ -60,6 +60,17 @@ public class Category extends AggregateRoot<CategoryID> {
         return this;
     }
 
+    public Category update(final String name, final String description, final boolean active) {
+        if (active) {
+            activate();
+        } else {
+            deactivate();
+        }
+        this.name = name;
+        this.description = description;
+        return this;
+    }
+
     public CategoryID getId() {
         return id;
     }
