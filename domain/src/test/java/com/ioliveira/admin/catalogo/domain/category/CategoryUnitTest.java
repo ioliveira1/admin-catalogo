@@ -1,11 +1,13 @@
 package com.ioliveira.admin.catalogo.domain.category;
 
-import org.junit.jupiter.api.Assertions;
+import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
+import com.ioliveira.admin.catalogo.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CategoryUnitTest {
 
@@ -38,9 +40,9 @@ public class CategoryUnitTest {
 
         final var category = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
 
-        final var exception = Assertions.assertThrows(DomainException.class, () -> category.validate());
+        final var exception = assertThrows(DomainException.class, () -> category.validate(new ThrowsValidationHandler()));
 
-        assertEquals(expectedErrorMessage, exception.getErrors().get(0));
         assertEquals(expectedErrorCount, exception.getErrors().size());
+        assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
     }
 }
