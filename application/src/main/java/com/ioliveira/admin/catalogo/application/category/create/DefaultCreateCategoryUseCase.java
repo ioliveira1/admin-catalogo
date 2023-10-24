@@ -3,8 +3,12 @@ package com.ioliveira.admin.catalogo.application.category.create;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
+import io.vavr.control.Either;
 
 import java.util.Objects;
+
+import static io.vavr.API.Left;
+import static io.vavr.API.Try;
 
 public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
 
@@ -15,7 +19,7 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
     }
 
     @Override
-    public CreateCategoryOutput execute(final CreateCategoryCommand createCategoryCommand) {
+    public Either<Notification, CreateCategoryOutput> execute(final CreateCategoryCommand createCategoryCommand) {
 
         final Category category = Category
                 .newCategory(
@@ -27,11 +31,14 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
         final Notification notification = Notification.create();
         category.validate(notification);
 
-        if (notification.hasErrors()) {
-            //
-        }
+        return notification.hasErrors()
+                ? Left(notification)
+                : create(category);
+    }
 
-        return CreateCategoryOutput
-                .from(this.categoryGateway.create(category));
+    private Either<Notification, CreateCategoryOutput> create(final Category category) {
+        return Try(() -> this.categoryGateway.create(category))
+                .toEither()
+                .bimap(Notification::create, CreateCategoryOutput::from);
     }
 }

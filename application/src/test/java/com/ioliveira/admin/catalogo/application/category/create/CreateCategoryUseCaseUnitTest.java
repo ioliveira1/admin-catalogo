@@ -1,7 +1,6 @@
 package com.ioliveira.admin.catalogo.application.category.create;
 
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
-import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -40,7 +39,7 @@ public class CreateCategoryUseCaseUnitTest {
         when(categoryGateway.create(any()))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        final var output = useCase.execute(command);
+        final var output = useCase.execute(command).get();
 
         assertNotNull(output);
         assertNotNull(output.id());
@@ -60,12 +59,14 @@ public class CreateCategoryUseCaseUnitTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
         final var expectedErrorMessage = "'name' should not be null";
+        final var expectedErrorCount = 1;
 
         final var command = CreateCategoryCommand.with(null, expectedDescription, expectedIsActive);
 
-        final var exception = assertThrows(DomainException.class, () -> useCase.execute(command));
+        final var notification = useCase.execute(command).getLeft();
 
-        assertEquals(expectedErrorMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, notification.getErrors().size());
+        assertEquals(expectedErrorMessage, notification.getErrors().get(0).message());
 
         verify(categoryGateway, times(0)).create(any());
     }
@@ -81,7 +82,7 @@ public class CreateCategoryUseCaseUnitTest {
         when(categoryGateway.create(any()))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        final var output = useCase.execute(command);
+        final var output = useCase.execute(command).get();
 
         assertNotNull(output);
         assertNotNull(output.id());
@@ -102,15 +103,17 @@ public class CreateCategoryUseCaseUnitTest {
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
         final var expectedErrorMessage = "Gateway error";
+        final var expectedErrorCount = 1;
 
         final var command = CreateCategoryCommand.with(expectedName, expectedDescription, expectedIsActive);
 
         when(categoryGateway.create(any()))
                 .thenThrow(new IllegalStateException(expectedErrorMessage));
 
-        final var exception = assertThrows(IllegalStateException.class, () -> useCase.execute(command));
+        final var notification = useCase.execute(command).getLeft();
 
-        assertEquals(expectedErrorMessage, exception.getMessage());
+        assertEquals(expectedErrorCount, notification.getErrors().size());
+        assertEquals(expectedErrorMessage, notification.getErrors().get(0).message());
 
         verify(categoryGateway, times(1)).create(argThat(category ->
                 Objects.equals(expectedName, category.getName())
