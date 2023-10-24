@@ -42,7 +42,7 @@ public class UpdateCategoryUseCaseUnitTest {
                 .with(expectedId.getValue(), expectedName, expectedDescription, expectedIsActive);
 
         when(categoryGateway.findById(eq(expectedId)))
-                .thenReturn(Optional.of(category));
+                .thenReturn(Optional.of(category.clone()));
 
         when(categoryGateway.update(any()))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
@@ -60,7 +60,7 @@ public class UpdateCategoryUseCaseUnitTest {
                         && Objects.equals(expectedIsActive, update.isActive())
                         && Objects.equals(expectedId, update.getId())
                         && Objects.equals(category.getCreatedAt(), update.getCreatedAt())
-                        && category.getUpdatedAt().isBefore(update.getUpdatedAt()) //TODO: instancia retornada pelo update é a mesma da criada em Category.newCategory()... Datas ão iguais
+                        && category.getUpdatedAt().isBefore(update.getUpdatedAt())
                         && Objects.isNull(update.getDeletedAt())));
     }
 }
