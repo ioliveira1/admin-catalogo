@@ -60,7 +60,7 @@ public class UpdateCategoryUseCaseUnitTest {
                         && Objects.equals(expectedIsActive, update.isActive())
                         && Objects.equals(expectedId, update.getId())
                         && Objects.equals(category.getCreatedAt(), update.getCreatedAt())
-                        && category.getUpdatedAt().isBefore(update.getUpdatedAt())
+                        && category.getUpdatedAt().isBefore(update.getUpdatedAt()) //TODO: instancia retornada pelo update é a mesma da criada em Category.newCategory()... Datas ão iguais
                         && Objects.isNull(update.getDeletedAt())));
     }
 }
