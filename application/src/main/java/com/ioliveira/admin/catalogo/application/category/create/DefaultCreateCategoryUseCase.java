@@ -2,7 +2,7 @@ package com.ioliveira.admin.catalogo.application.category.create;
 
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
-import com.ioliveira.admin.catalogo.domain.validation.handler.ThrowsValidationHandler;
+import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
 
 import java.util.Objects;
 
@@ -24,7 +24,12 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
                         createCategoryCommand.isActive()
                 );
 
-        category.validate(new ThrowsValidationHandler());
+        final Notification notification = Notification.create();
+        category.validate(notification);
+
+        if (notification.hasErrors()) {
+            //
+        }
 
         return CreateCategoryOutput
                 .from(this.categoryGateway.create(category));
