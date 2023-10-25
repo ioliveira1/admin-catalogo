@@ -64,7 +64,7 @@ public class DeleteCategoryUseCaseUnitTest {
         doThrow(new IllegalStateException("Gateway error"))
                 .when(categoryGateway).deleteById(eq(expectedId));
 
-        assertThrows(IllegalAccessError.class, () -> useCase.execute(expectedId.getValue()));
+        assertThrows(IllegalStateException.class, () -> useCase.execute(expectedId.getValue()));
 
         verify(categoryGateway, times(1)).deleteById(eq(expectedId));
     }
