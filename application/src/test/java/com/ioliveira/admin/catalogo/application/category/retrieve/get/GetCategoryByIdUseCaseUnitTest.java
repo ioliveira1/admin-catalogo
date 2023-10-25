@@ -4,7 +4,6 @@ import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class GetCategoryByIdUseCaseUnitTest {
 
     @InjectMocks
-    private DefaultGetCategoryByIdCategoryUseCase useCase;
+    private DefaultGetCategoryByIdUseCase useCase;
 
     @Mock
     private CategoryGateway categoryGateway;
@@ -47,24 +47,24 @@ public class GetCategoryByIdUseCaseUnitTest {
 
         final var output = useCase.execute(expectedId.getValue());
 
-        Assertions.assertEquals(expectedId, output.id());
-        Assertions.assertEquals(expectedName, output.name());
-        Assertions.assertEquals(expectedDescription, output.description());
-        Assertions.assertEquals(expectedIsActive, output.isActive());
-        Assertions.assertEquals(category.getCreatedAt(), output.createdAt());
-        Assertions.assertEquals(category.getUpdatedAt(), output.updatedAt());
-        Assertions.assertEquals(category.getDeletedAt(), output.deletedAt());
+        assertEquals(expectedId, output.id());
+        assertEquals(expectedName, output.name());
+        assertEquals(expectedDescription, output.description());
+        assertEquals(expectedIsActive, output.isActive());
+        assertEquals(category.getCreatedAt(), output.createdAt());
+        assertEquals(category.getUpdatedAt(), output.updatedAt());
+        assertEquals(category.getDeletedAt(), output.deletedAt());
     }
 
     @Test
     public void givenAnInvalidId_whenCallsGetCategoryUseCase_shouldReturnNotFound() {
-        final var expectedErrorMessage = "";
+        final var expectedErrorMessage = "Category with ID 123 was not found";
         final CategoryID expectedId = CategoryID.from("123");
 
         when(categoryGateway.findById(eq(expectedId)))
                 .thenReturn(Optional.empty());
 
-        final DomainException exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(expectedId.getValue()));
+        final DomainException exception = assertThrows(DomainException.class, () -> useCase.execute(expectedId.getValue()));
 
         assertEquals(expectedErrorMessage, exception.getMessage());
     }
@@ -77,7 +77,7 @@ public class GetCategoryByIdUseCaseUnitTest {
         when(categoryGateway.findById(eq(expectedId)))
                 .thenThrow(new IllegalStateException(expectedErrorMessage));
 
-        final DomainException exception = Assertions.assertThrows(DomainException.class, () -> useCase.execute(expectedId.getValue()));
+        final IllegalStateException exception = assertThrows(IllegalStateException.class, () -> useCase.execute(expectedId.getValue()));
 
         assertEquals(expectedErrorMessage, exception.getMessage());
     }
