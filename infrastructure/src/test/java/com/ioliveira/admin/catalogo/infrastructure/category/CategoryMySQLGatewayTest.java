@@ -1,6 +1,7 @@
 package com.ioliveira.admin.catalogo.infrastructure.category;
 
 import com.ioliveira.admin.catalogo.domain.category.Category;
+import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.infrastructure.MySQLGatewayTest;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
@@ -101,5 +102,35 @@ public class CategoryMySQLGatewayTest {
         assertTrue(category.getUpdatedAt().isBefore(categoryJpaEntity.getUpdatedAt()));
         assertEquals(category.getDeletedAt(), categoryJpaEntity.getDeletedAt());
         assertNull(categoryJpaEntity.getDeletedAt());
+    }
+
+    @Test
+    public void givenAPrePersistedCategory_whenCallsDelete_shouldDeleteCategory() {
+        final Category category = Category.newCategory("Filmes", "A categoria mais assistida", true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(category));
+
+        assertEquals(1, categoryRepository.count());
+
+        categoryMySQLGateway.deleteById(category.getId());
+
+        assertEquals(0, categoryRepository.count());
+    }
+
+    @Test
+    public void givenAnInvalidCategoryId_whenCallsDelete_shouldDoNothing() {
+        final Category category = Category.newCategory("Filmes", "A categoria mais assistida", true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(category));
+
+        assertEquals(1, categoryRepository.count());
+
+        categoryMySQLGateway.deleteById(CategoryID.from("invalid"));
+
+        assertEquals(1, categoryRepository.count());
     }
 }
