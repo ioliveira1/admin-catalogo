@@ -133,4 +133,30 @@ public class CategoryMySQLGatewayTest {
 
         assertEquals(1, categoryRepository.count());
     }
+
+    @Test
+    public void givenAPrePersistedCategory_whenCallsFindById_shouldReturnCategory() {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        final Category category = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(category));
+
+        assertEquals(1, categoryRepository.count());
+
+        final Category categoryFound = categoryMySQLGateway.findById(category.getId()).get();
+
+        assertEquals(category.getId(), categoryFound.getId());
+        assertEquals(expectedName, categoryFound.getName());
+        assertEquals(expectedDescription, categoryFound.getDescription());
+        assertEquals(expectedIsActive, categoryFound.isActive());
+        assertEquals(category.getCreatedAt(), categoryFound.getCreatedAt());
+        assertEquals(category.getUpdatedAt(), categoryFound.getUpdatedAt());
+        assertEquals(category.getDeletedAt(), categoryFound.getDeletedAt());
+        assertNull(categoryFound.getDeletedAt());
+    }
 }
