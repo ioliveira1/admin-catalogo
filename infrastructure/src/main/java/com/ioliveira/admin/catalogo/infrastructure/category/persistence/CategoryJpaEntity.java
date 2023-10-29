@@ -83,27 +83,55 @@ public class CategoryJpaEntity {
         return id;
     }
 
+    public void setId(final String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(final Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
+    public void setUpdatedAt(final Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public void setDeletedAt(final Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }
