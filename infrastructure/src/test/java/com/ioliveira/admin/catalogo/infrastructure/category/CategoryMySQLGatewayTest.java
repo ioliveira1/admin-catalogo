@@ -2,12 +2,17 @@ package com.ioliveira.admin.catalogo.infrastructure.category;
 
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
+import com.ioliveira.admin.catalogo.domain.category.CategorySearchQuery;
+import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.infrastructure.MySQLGatewayTest;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -158,5 +163,166 @@ public class CategoryMySQLGatewayTest {
         assertEquals(category.getUpdatedAt(), categoryFound.getUpdatedAt());
         assertEquals(category.getDeletedAt(), categoryFound.getDeletedAt());
         assertNull(categoryFound.getDeletedAt());
+    }
+
+    @Test
+    public void givenPrePersistedCategories_whenCallsFindAll_shouldReturnCategoriesPaginated() {
+        final var expectedPage = 0;
+        final var expectedPerPage = 1;
+        final var expectedTotal = 3;
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAllAndFlush(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        assertEquals(3, categoryRepository.count());
+
+        final var query = new CategorySearchQuery(0, 1, "", "name", "asc");
+        final Pagination<Category> result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(documentarios.getId(), result.items().get(0).getId());
+        Assertions.assertEquals(filmes.getId(), result.items().get(1).getId());
+        Assertions.assertEquals(series.getId(), result.items().get(2).getId());
+    }
+
+    @Test
+    public void givenEmptyDataBase_whenCallsFindAll_shouldReturnEmptyPage() {
+        final var expectedPage = 0;
+        final var expectedPerPage = 1;
+        final var expectedTotal = 0;
+
+        assertEquals(0, categoryRepository.count());
+
+        final var query = new CategorySearchQuery(0, 1, "", "name", "asc");
+        final Pagination<Category> result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+    }
+
+    public void givenPagination_whenCallsFindAllPage1_shouldReturnPaginated() {
+        var expectedPage = 0;
+        final var expectedPerPage = 1;
+        final var expectedTotal = 3;
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAllAndFlush(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        assertEquals(3, categoryRepository.count());
+
+        // Page 0
+        var query = new CategorySearchQuery(0, 1, "", "name", "asc");
+        Pagination<Category> result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(documentarios.getId(), result.items().get(0).getId());
+
+        // Page 1
+        expectedPage = 1;
+        query = new CategorySearchQuery(1, 1, "", "name", "asc");
+        result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(filmes.getId(), result.items().get(0).getId());
+
+        // Page 2
+        expectedPage = 2;
+        query = new CategorySearchQuery(2, 1, "", "name", "asc");
+        result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(series.getId(), result.items().get(0).getId());
+    }
+
+    @Test
+    public void givenPrePersistedCategories_whenCallsFindAllAndDocAsTerms_shouldReturnCategoriesPaginated() {
+        final var expectedPage = 0;
+        final var expectedPerPage = 1;
+        final var expectedTotal = 1;
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAllAndFlush(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        assertEquals(3, categoryRepository.count());
+
+        final var query = new CategorySearchQuery(0, 1, "doc", "name", "asc");
+        final Pagination<Category> result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(documentarios.getId(), result.items().get(0).getId());
+    }
+
+    @Test
+    public void givenPrePersistedCategories_whenCallsFindAllAndMaisAssistidaAsTerms_shouldReturnCategoriesPaginated() {
+        final var expectedPage = 0;
+        final var expectedPerPage = 1;
+        final var expectedTotal = 1;
+
+        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true);
+        final var series = Category.newCategory("Séries", "Uma categoria assistida", true);
+        final var documentarios = Category.newCategory("Documentários", "A categoria menos assistida", true);
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAllAndFlush(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        assertEquals(3, categoryRepository.count());
+
+        final var query = new CategorySearchQuery(0, 1, "MAIS ASSISTIDA", "name", "asc");
+        final Pagination<Category> result = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, result.currentPage());
+        Assertions.assertEquals(expectedPerPage, result.perPage());
+        Assertions.assertEquals(expectedTotal, result.total());
+        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(filmes.getId(), result.items().get(0).getId());
     }
 }
