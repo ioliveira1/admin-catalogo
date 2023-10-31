@@ -1,8 +1,7 @@
-package com.ioliveira.admin.catalogo.application.category.retrieve.get;
+package com.ioliveira.admin.catalogo.application.category.update;
 
 import com.ioliveira.admin.catalogo.IntegrationTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
-import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,12 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @IntegrationTest
-public class GetCategoryByIdUseCaseIT {
+public class UpdateCategoryUseCaseIT {
 
     @Autowired
-    private GetCategoryByIdUseCase useCase;
+    private UpdateCategoryUseCase useCase;
 
     @Autowired
     private CategoryRepository repository;
@@ -29,13 +29,13 @@ public class GetCategoryByIdUseCaseIT {
     }
 
     @Test
-    public void givenAValidId_whenCallsGetCategoryUseCase_shouldReturnCategory() {
+    public void givenAValidCommand_WhenCallsUpdateCategoryUseCase_ShouldReturnCategoryId() {
+        final var category = Category.newCategory("name", "desc", true);
+
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
-
-        final Category category = Category.newCategory(expectedName, expectedDescription, expectedIsActive);
-        final CategoryID expectedId = category.getId();
+        final var expectedId = category.getId();
 
         assertEquals(0, repository.count());
 
@@ -43,17 +43,21 @@ public class GetCategoryByIdUseCaseIT {
 
         assertEquals(1, repository.count());
 
-        final var output = useCase.execute(expectedId.getValue());
+        final var command = UpdateCategoryCommand
+                .with(expectedId.getValue(), expectedName, expectedDescription, expectedIsActive);
+
+        final var output = useCase.execute(command).get();
+
+        final var persistedCategory = repository.findById(output.id().getValue()).get();
 
         final DateTimeFormatter formatter =
                 new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
-        assertEquals(expectedId, output.id());
-        assertEquals(expectedName, output.name());
-        assertEquals(expectedDescription, output.description());
-        assertEquals(expectedIsActive, output.isActive());
-        assertEquals(formatter.format(category.getCreatedAt()), formatter.format(output.createdAt()));
-        assertEquals(formatter.format(category.getUpdatedAt()), formatter.format(output.updatedAt()));
-        assertEquals(category.getDeletedAt(), output.deletedAt());
+        assertEquals(expectedName, persistedCategory.getName());
+        assertEquals(expectedDescription, persistedCategory.getDescription());
+        assertEquals(expectedIsActive, persistedCategory.isActive());
+        assertEquals(formatter.format(category.getCreatedAt()), formatter.format(persistedCategory.getCreatedAt()));
+        assertTrue(category.getUpdatedAt().isBefore(persistedCategory.getUpdatedAt()));
+        assertEquals(category.getDeletedAt(), persistedCategory.getDeletedAt());
     }
 }
