@@ -33,7 +33,10 @@ dependencies {
 
     implementation('mysql:mysql-connector-java')
 
-    implementation 'io.vavr:vavr:0.10.4'
+    implementation('org.springdoc:springdoc-openapi-webmvc-core:1.6.8')
+    implementation('org.springdoc:springdoc-openapi-ui:1.6.8')
+
+    implementation('io.vavr:vavr:0.10.4')
 
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude module: 'spring-boot-starter-tomcat'
@@ -44,7 +47,7 @@ dependencies {
     testImplementation('org.flywaydb:flyway-core')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
-    testRuntimeOnly ('com.h2database:h2')
+    testRuntimeOnly('com.h2database:h2')
 }
 
 flyway {
