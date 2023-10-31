@@ -9,9 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @IntegrationTest
@@ -45,15 +42,12 @@ public class GetCategoryByIdUseCaseIT {
 
         final var output = useCase.execute(expectedId.getValue());
 
-        final DateTimeFormatter formatter =
-                new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
-
         assertEquals(expectedId, output.id());
         assertEquals(expectedName, output.name());
         assertEquals(expectedDescription, output.description());
         assertEquals(expectedIsActive, output.isActive());
-        assertEquals(formatter.format(category.getCreatedAt()), formatter.format(output.createdAt()));
-        assertEquals(formatter.format(category.getUpdatedAt()), formatter.format(output.updatedAt()));
+        assertEquals(category.getCreatedAt(), output.createdAt());
+        assertEquals(category.getUpdatedAt(), output.updatedAt());
         assertEquals(category.getDeletedAt(), output.deletedAt());
     }
 }
