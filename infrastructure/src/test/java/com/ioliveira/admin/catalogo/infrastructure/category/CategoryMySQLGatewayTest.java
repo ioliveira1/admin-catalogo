@@ -168,7 +168,7 @@ public class CategoryMySQLGatewayTest {
     @Test
     public void givenPrePersistedCategories_whenCallsFindAll_shouldReturnCategoriesPaginated() {
         final var expectedPage = 0;
-        final var expectedPerPage = 1;
+        final var expectedPerPage = 5;
         final var expectedTotal = 3;
 
         final var filmes = Category.newCategory("Filmes", null, true);
@@ -185,13 +185,13 @@ public class CategoryMySQLGatewayTest {
 
         assertEquals(3, categoryRepository.count());
 
-        final var query = new CategorySearchQuery(0, 1, "", "name", "asc");
+        final var query = new CategorySearchQuery(0, 5, "", "name", "asc");
         final Pagination<Category> result = categoryMySQLGateway.findAll(query);
 
         Assertions.assertEquals(expectedPage, result.currentPage());
         Assertions.assertEquals(expectedPerPage, result.perPage());
         Assertions.assertEquals(expectedTotal, result.total());
-        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(expectedTotal, result.items().size());
         Assertions.assertEquals(documentarios.getId(), result.items().get(0).getId());
         Assertions.assertEquals(filmes.getId(), result.items().get(1).getId());
         Assertions.assertEquals(series.getId(), result.items().get(2).getId());
@@ -292,7 +292,7 @@ public class CategoryMySQLGatewayTest {
         Assertions.assertEquals(expectedPage, result.currentPage());
         Assertions.assertEquals(expectedPerPage, result.perPage());
         Assertions.assertEquals(expectedTotal, result.total());
-        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(expectedTotal, result.items().size());
         Assertions.assertEquals(documentarios.getId(), result.items().get(0).getId());
     }
 
@@ -322,7 +322,7 @@ public class CategoryMySQLGatewayTest {
         Assertions.assertEquals(expectedPage, result.currentPage());
         Assertions.assertEquals(expectedPerPage, result.perPage());
         Assertions.assertEquals(expectedTotal, result.total());
-        Assertions.assertEquals(expectedPage, result.items().size());
+        Assertions.assertEquals(expectedTotal, result.items().size());
         Assertions.assertEquals(filmes.getId(), result.items().get(0).getId());
     }
 }
