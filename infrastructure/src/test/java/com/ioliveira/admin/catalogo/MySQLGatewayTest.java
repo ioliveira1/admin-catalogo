@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @DataJpaTest
 //@ComponentScan("com.ioliveira.admin.catalogo")
 @ComponentScan(includeFilters = {
-        @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*[MySQLGateway]")
+        @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[MySQLGateway]")
 })
 public @interface MySQLGatewayTest {
 }
