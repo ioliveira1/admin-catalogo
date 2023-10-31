@@ -4,7 +4,7 @@ import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.category.CategorySearchQuery;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
-import com.ioliveira.admin.catalogo.infrastructure.MySQLGatewayTest;
+import com.ioliveira.admin.catalogo.MySQLGatewayTest;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
