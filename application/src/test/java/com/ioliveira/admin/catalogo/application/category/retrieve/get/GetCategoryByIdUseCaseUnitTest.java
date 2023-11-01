@@ -3,7 +3,7 @@ package com.ioliveira.admin.catalogo.application.category.retrieve.get;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
-import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
+import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +64,7 @@ public class GetCategoryByIdUseCaseUnitTest {
         when(categoryGateway.findById(eq(expectedId)))
                 .thenReturn(Optional.empty());
 
-        final DomainException exception = assertThrows(DomainException.class, () -> useCase.execute(expectedId.getValue()));
+        final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(expectedId.getValue()));
 
         assertEquals(expectedErrorMessage, exception.getMessage());
     }
