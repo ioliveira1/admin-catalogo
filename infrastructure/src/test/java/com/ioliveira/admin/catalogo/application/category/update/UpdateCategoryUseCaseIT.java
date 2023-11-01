@@ -45,7 +45,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var output = useCase.execute(command).get();
 
-        final var persistedCategory = repository.findById(output.id().getValue()).get();
+        final var persistedCategory = repository.findById(output.id()).get();
 
         assertEquals(expectedName, persistedCategory.getName());
         assertEquals(expectedDescription, persistedCategory.getDescription());

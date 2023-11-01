@@ -6,6 +6,8 @@ import com.ioliveira.admin.catalogo.application.category.create.CreateCategoryOu
 import com.ioliveira.admin.catalogo.application.category.create.CreateCategoryUseCase;
 import com.ioliveira.admin.catalogo.application.category.retrieve.get.CategoryOutput;
 import com.ioliveira.admin.catalogo.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.ioliveira.admin.catalogo.application.category.update.UpdateCategoryOutput;
+import com.ioliveira.admin.catalogo.application.category.update.UpdateCategoryUseCase;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
@@ -13,6 +15,7 @@ import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.domain.validation.Error;
 import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategoryApiInput;
+import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryApiInput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +56,9 @@ public class CategoryAPITest {
 
     @MockBean
     private GetCategoryByIdUseCase getCategoryByIdUseCase;
+
+    @MockBean
+    private UpdateCategoryUseCase updateCategoryUseCase;
 
     @Test
     public void givenAValidCommand_WhenCallsCreateCategoryApi_ShouldReturnCategoryId() throws Exception {
@@ -160,6 +167,7 @@ public class CategoryAPITest {
 
         this.mvc.perform(request)
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", equalTo(expectedId)))
                 .andExpect(jsonPath("$.name", equalTo(expectedName)))
                 .andExpect(jsonPath("$.description", equalTo(expectedDescription)))
@@ -183,5 +191,31 @@ public class CategoryAPITest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    public void givenAValidCommand_WhenCallsUpdateCategoryApi_ShouldReturnCategoryId() throws Exception {
+        final var expectedId = "123";
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        when(updateCategoryUseCase.execute(any()))
+                .thenReturn(Right(UpdateCategoryOutput.from(expectedId)));
+
+        final var input = new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+
+        final var request = put("/categories/{id}", expectedId)
+                .content(this.mapper.writeValueAsString(input));
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(updateCategoryUseCase, times(1)).execute(argThat(cmd ->
+                Objects.equals(expectedName, cmd.name())
+                        && Objects.equals(expectedDescription, cmd.description())
+                        && Objects.equals(expectedIsActive, cmd.isActive())
+        ));
     }
 }
