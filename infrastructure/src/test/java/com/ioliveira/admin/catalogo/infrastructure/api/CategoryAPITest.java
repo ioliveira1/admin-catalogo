@@ -165,13 +165,16 @@ public class CategoryAPITest {
                 .andExpect(jsonPath("$.is_active", equalTo(expectedIsActive)))
                 .andExpect(jsonPath("$.created_at", equalTo(category.getCreatedAt().toString())))
                 .andExpect(jsonPath("$.updated_at", equalTo(category.getUpdatedAt().toString())))
-                .andExpect(jsonPath("$.deleted_at", equalTo(category.getDeletedAt().toString())));
+                .andExpect(jsonPath("$.deleted_at", equalTo(category.getDeletedAt())));
     }
 
     @Test
     public void givenAnInvalidId_whenCallsGetCategoryApi_shouldReturnNotFound() throws Exception {
         final var expectedErrorMessage = "Category with ID 123 was not found";
         final var expectedId = CategoryID.from("123").getValue();
+
+        when(getCategoryByIdUseCase.execute(any()))
+                .thenThrow(DomainException.with(new Error("Category with ID %s was not found".formatted(expectedId))));
 
         final var request = get("/categories/{id}", expectedId);
 
