@@ -3,7 +3,7 @@ package com.ioliveira.admin.catalogo.application.category.update;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
-import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
+import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -188,10 +188,9 @@ public class UpdateCategoryUseCaseUnitTest {
         when(categoryGateway.findById(eq(CategoryID.from(expectedId))))
                 .thenReturn(Optional.empty());
 
-        final DomainException exception = assertThrows(DomainException.class, () -> useCase.execute(command));
+        final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(command));
 
         assertEquals(expectedErrorMessage, exception.getMessage());
-        assertEquals(expectedErrorCount, exception.getErrors().size());
 
         verify(categoryGateway, times(1)).findById(eq(CategoryID.from(expectedId)));
 
