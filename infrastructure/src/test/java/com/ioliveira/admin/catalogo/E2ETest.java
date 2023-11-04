@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test-e2e")
 @SpringBootTest(classes = WebServerConfig.class)
-public @interface IntegrationTest {
+public @interface E2ETest {
 }
