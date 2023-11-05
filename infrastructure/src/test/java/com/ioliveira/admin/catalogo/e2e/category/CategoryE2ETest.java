@@ -74,6 +74,8 @@ public class CategoryE2ETest {
 
         final var id = givenACategory(expectedName, expectedDescription, expectedIsActive);
 
+        assertEquals(1, repository.count());
+
         final var persistedCategory = retrieveACategory(id.getValue());
 
         assertEquals(expectedName, persistedCategory.name());
@@ -91,6 +93,8 @@ public class CategoryE2ETest {
         givenACategory("Filmes", null, true);
         givenACategory("Documentários", null, false);
         givenACategory("Séries", null, true);
+
+        assertEquals(3, repository.count());
 
         listCategories(0, 1)
                 .andExpect(status().isOk())
@@ -132,6 +136,8 @@ public class CategoryE2ETest {
         givenACategory("Documentários", null, false);
         givenACategory("Séries", null, true);
 
+        assertEquals(3, repository.count());
+
         listCategories(0, 1, "fil")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(0)))
@@ -149,6 +155,8 @@ public class CategoryE2ETest {
         givenACategory("Documentários", "Z", false);
         givenACategory("Séries", "A", true);
 
+        assertEquals(3, repository.count());
+
         listCategories(0, 3, "description", "desc", "")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.current_page", equalTo(0)))
@@ -158,6 +166,18 @@ public class CategoryE2ETest {
                 .andExpect(jsonPath("$.items[0].name", equalTo("Documentários")))
                 .andExpect(jsonPath("$.items[1].name", equalTo("Filmes")))
                 .andExpect(jsonPath("$.items[2].name", equalTo("Séries")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToSeeATreatedErrorWhenCategoryNotFound() throws Exception {
+
+        assertEquals(0, repository.count());
+
+        final var request = get("/categories/123");
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(jsonPath("$.message", equalTo("Category with ID 123 was not found")));
     }
 
     private ResultActions listCategories(final int page, final int perPage, final String search) throws Exception {
