@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -127,7 +128,7 @@ public class GenreTest {
         final Instant updatedAt = genre.getUpdatedAt();
 
         assertNotNull(genre);
-        assertTrue(genre.isActive());
+        assertFalse(genre.isActive());
         assertNotNull(genre.getDeletedAt());
 
         final var actualGenre = genre.activate();

@@ -60,6 +60,22 @@ public class Genre extends AggregateRoot<GenreID> {
         );
     }
 
+    public Genre activate() {
+        this.deletedAt = null;
+        this.active = true;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
+    public Genre deactivate() {
+        if (getDeletedAt() == null) {
+            this.deletedAt = InstantUtils.now();
+        }
+        this.active = false;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     public static Genre clone(final Genre genre) {
         return new Genre(
                 genre.id,
@@ -71,8 +87,6 @@ public class Genre extends AggregateRoot<GenreID> {
                 genre.getDeletedAt()
         );
     }
-
-
 
     @Override
     public void validate(final ValidationHandler handler) {
