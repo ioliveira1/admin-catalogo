@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -212,6 +213,27 @@ public class CategoryE2ETest {
         assertNotNull(persistedCategory.getCreatedAt());
         assertNotNull(persistedCategory.getUpdatedAt());
         assertNotNull(persistedCategory.getDeletedAt());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToDeleteACategoryById() throws Exception {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        assertEquals(0, repository.count());
+
+        final var id = givenACategory(expectedName, expectedDescription, expectedIsActive);
+
+        assertEquals(1, repository.count());
+
+        final var request = delete("/categories/{id}", id.getValue());
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        assertEquals(0, repository.count());
     }
 
     private ResultActions listCategories(final int page, final int perPage, final String search) throws Exception {
