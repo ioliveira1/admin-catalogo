@@ -1,0 +1,94 @@
+package com.ioliveira.admin.catalogo.domain.genre;
+
+import com.ioliveira.admin.catalogo.domain.AggregateRoot;
+import com.ioliveira.admin.catalogo.domain.category.CategoryID;
+import com.ioliveira.admin.catalogo.domain.utils.InstantUtils;
+import com.ioliveira.admin.catalogo.domain.validation.ValidationHandler;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Genre extends AggregateRoot<GenreID> {
+
+    private String name;
+    private boolean active;
+    private List<CategoryID> categories;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
+
+    private Genre(
+            final GenreID id,
+            final String name,
+            final boolean active,
+            final List<CategoryID> categories,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Instant deletedAt) {
+
+        super(id);
+        this.name = name;
+        this.active = active;
+        this.categories = categories;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
+
+    public static Genre newGenre(final String name, final boolean isActive) {
+        final GenreID id = GenreID.unique();
+        final Instant now = InstantUtils.now();
+
+        return new Genre(id,
+                name,
+                isActive,
+                new ArrayList<>(),
+                now,
+                now,
+                isActive ? null : now
+        );
+    }
+
+    public static Genre clone(final Genre genre) {
+        return new Genre(
+                genre.id,
+                genre.getName(),
+                genre.isActive(),
+                new ArrayList<>(genre.getCategories()),
+                genre.getCreatedAt(),
+                genre.getUpdatedAt(),
+                genre.getDeletedAt()
+        );
+    }
+
+    @Override
+    public void validate(final ValidationHandler handler) {
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public List<CategoryID> getCategories() {
+        return Collections.unmodifiableList(categories);
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+}
