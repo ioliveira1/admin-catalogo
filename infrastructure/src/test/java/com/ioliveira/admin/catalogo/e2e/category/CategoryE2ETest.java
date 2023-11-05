@@ -4,6 +4,7 @@ import com.ioliveira.admin.catalogo.E2ETest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CategoryResponse;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;
+import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import com.ioliveira.admin.catalogo.infrastructure.json.Json;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -178,6 +180,38 @@ public class CategoryE2ETest {
         this.mvc.perform(request)
                 .andDo(print())
                 .andExpect(jsonPath("$.message", equalTo("Category with ID 123 was not found")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToUpdateACategoryById() throws Exception {
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = false;
+
+        assertEquals(0, repository.count());
+
+        final var id = givenACategory("Movies", null, true);
+
+        assertEquals(1, repository.count());
+
+        final var requestBody = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
+
+        final var request = put("/categories/{id}", id.getValue())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Json.writeValueAsString(requestBody));
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        final var persistedCategory = repository.findById(id.getValue()).get();
+
+        assertEquals(expectedName, persistedCategory.getName());
+        assertEquals(expectedDescription, persistedCategory.getDescription());
+        assertEquals(expectedIsActive, persistedCategory.isActive());
+        assertNotNull(persistedCategory.getCreatedAt());
+        assertNotNull(persistedCategory.getUpdatedAt());
+        assertNotNull(persistedCategory.getDeletedAt());
     }
 
     private ResultActions listCategories(final int page, final int perPage, final String search) throws Exception {
