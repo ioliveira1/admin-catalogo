@@ -1,6 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.genre;
 
-import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
+import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Test;
 
@@ -35,10 +35,8 @@ public class GenreTest {
         final var expectedErrorMessage = "'name' should not be null";
         final var expectedErrorCount = 1;
 
-        final var genre = Genre.newGenre(null, expectedIsActive);
-
         final var exception =
-                assertThrows(DomainException.class, () -> genre.validate(new ThrowsValidationHandler()));
+                assertThrows(NotificationException.class, () -> Genre.newGenre(null, expectedIsActive));
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
@@ -50,10 +48,8 @@ public class GenreTest {
         final var expectedErrorMessage = "'name' should not be empty";
         final var expectedErrorCount = 1;
 
-        final var genre = Genre.newGenre("  ", expectedIsActive);
-
         final var exception =
-                assertThrows(DomainException.class, () -> genre.validate(new ThrowsValidationHandler()));
+                assertThrows(NotificationException.class, () -> Genre.newGenre(" ", expectedIsActive));
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
@@ -66,9 +62,8 @@ public class GenreTest {
         final var expectedErrorMessage = "'name' must be between 3 and 255 characters";
         final var expectedErrorCount = 1;
 
-        final var genre = Genre.newGenre(expectedName, expectedIsActive);
-
-        final var exception = assertThrows(DomainException.class, () -> genre.validate(new ThrowsValidationHandler()));
+        final var exception =
+                assertThrows(NotificationException.class, () -> Genre.newGenre(expectedName, expectedIsActive));
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
@@ -85,9 +80,8 @@ public class GenreTest {
         final var expectedErrorMessage = "'name' must be between 3 and 255 characters";
         final var expectedErrorCount = 1;
 
-        final var genre = Genre.newGenre(expectedName, expectedIsActive);
-
-        final var exception = assertThrows(DomainException.class, () -> genre.validate(new ThrowsValidationHandler()));
+        final var exception =
+                assertThrows(NotificationException.class, () -> Genre.newGenre(expectedName, expectedIsActive));
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());

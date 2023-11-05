@@ -2,8 +2,10 @@ package com.ioliveira.admin.catalogo.domain.genre;
 
 import com.ioliveira.admin.catalogo.domain.AggregateRoot;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
+import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.utils.InstantUtils;
 import com.ioliveira.admin.catalogo.domain.validation.ValidationHandler;
+import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -35,6 +37,13 @@ public class Genre extends AggregateRoot<GenreID> {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+
+        final Notification notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasErrors()) {
+            throw new NotificationException("Failed to create an aggregate Genre", notification);
+        }
     }
 
     public static Genre newGenre(final String name, final boolean isActive) {
@@ -65,7 +74,7 @@ public class Genre extends AggregateRoot<GenreID> {
 
     @Override
     public void validate(final ValidationHandler handler) {
-
+        new GenreValidator(handler, this).validate();
     }
 
     public String getName() {
