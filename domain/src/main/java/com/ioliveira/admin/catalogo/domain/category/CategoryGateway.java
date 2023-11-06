@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.category;
 
+import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 
 import java.util.Optional;
@@ -14,5 +15,5 @@ public interface CategoryGateway {
 
     Category update(Category category);
 
-    Pagination<Category> findAll(CategorySearchQuery query);
+    Pagination<Category> findAll(SearchQuery query);
 }

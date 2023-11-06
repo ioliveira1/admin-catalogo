@@ -2,7 +2,7 @@ package com.ioliveira.admin.catalogo.application.category.retrieve.list;
 
 import com.ioliveira.admin.catalogo.IntegrationTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
-import com.ioliveira.admin.catalogo.domain.category.CategorySearchQuery;
+import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,7 @@ public class ListCategoriesUseCaseIT {
         final var expectedDirection = "asc";
 
         final var query =
-                new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+                new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         final var result = useCase.execute(query);
 
@@ -91,7 +91,7 @@ public class ListCategoriesUseCaseIT {
         final var expectedTerms = "";
 
         final var query =
-                new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+                new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         final var result = useCase.execute(query);
 
@@ -121,7 +121,7 @@ public class ListCategoriesUseCaseIT {
         final var expectedTerms = "";
 
         final var query =
-                new CategorySearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
+                new SearchQuery(expectedPage, expectedPerPage, expectedTerms, expectedSort, expectedDirection);
 
         final var result = useCase.execute(query);
 
