@@ -32,7 +32,7 @@ public class DefaultCreateGenreUseCase extends CreateGenreUseCase {
         final List<CategoryID> categories = command.categories().stream().map(CategoryID::from).toList();
 
         final Notification notification = Notification.create();
-        notification.append(validateCategories(categories, notification));
+        validateCategories(categories, notification);
 
         final Genre genre = notification.validate(() -> Genre.newGenre(command.name(), command.isActive()));
 
@@ -40,6 +40,7 @@ public class DefaultCreateGenreUseCase extends CreateGenreUseCase {
             throw new NotificationException("Could not create an aggregate Genre", notification);
         }
 
+        genre.addCategories(categories);
         return CreateGenreOutput.from(this.genreGateway.create(genre));
     }
 
@@ -58,7 +59,7 @@ public class DefaultCreateGenreUseCase extends CreateGenreUseCase {
                     .map(CategoryID::getValue)
                     .collect(Collectors.joining(", "));
 
-            handler.append(new Error("SOme categories could not be found: %s".formatted(invalidIds)));
+            handler.append(new Error("Some categories could not be found: %s".formatted(invalidIds)));
         }
 
         return handler;
