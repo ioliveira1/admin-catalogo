@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class CreateGenreUseCaseTest {
 
     @InjectMocks
-    private DefaultGenreCategoryUseCase useCase;
+    private DefaultCreateGenreUseCase useCase;
 
     @Mock
     private CategoryGateway categoryGateway;
@@ -51,7 +51,7 @@ public class CreateGenreUseCaseTest {
         when(genreGateway.create(any()))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        final var output = useCase.execute(command).get();
+        final var output = useCase.execute(command);
 
         assertNotNull(output);
         assertNotNull(output.id());

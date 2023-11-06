@@ -3,8 +3,8 @@ package com.ioliveira.admin.catalogo.infrastructure.category;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
-import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
+import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import org.springframework.data.domain.Page;
@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -86,5 +88,11 @@ public class CategoryMySQLGateway implements CategoryGateway {
                 pageResult.getTotalElements(),
                 pageResult.map(CategoryJpaEntity::toAggregate).toList()
         );
+    }
+
+    @Override
+    public List<CategoryID> existsByIds(final List<CategoryID> ids) {
+        //TODO implementar quando chegar na camada de infra
+        return Collections.emptyList();
     }
 }
