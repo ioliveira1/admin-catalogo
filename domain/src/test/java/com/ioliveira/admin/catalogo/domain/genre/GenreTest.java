@@ -190,20 +190,58 @@ public class GenreTest {
     }
 
     @Test
-    public void givenAValidGenre_whenCallsUpdateWithInvalidNullName_shouldReceiveNotificationException() {
+    public void givenAValidEmptyCategoriesGenre_whenCallsAddCategory_shouldAddCategories() {
+        final var seriesID = CategoryID.from("123");
+        final var moviesID = CategoryID.from("456");
+
+        final var expectedName = "Ação";
         final var expectedIsActive = true;
-        final var expectedCategories = List.of(CategoryID.from("123"));
-        final var expectedErrorMessage = "'name' should not be null";
-        final var expectedErrorCount = 1;
+        final var expectedCategories = List.of(moviesID);
 
-        final var genre = Genre.newGenre("acao", false);
+        final var genre = Genre.newGenre(expectedName, expectedIsActive);
+        genre.update(expectedName, expectedIsActive, List.of(seriesID, moviesID));
 
-        final var exception = assertThrows(
-                NotificationException.class,
-                () -> genre.update(null, expectedIsActive, expectedCategories)
-        );
+        assertEquals(2, genre.getCategories().size());
 
-        assertEquals(expectedErrorCount, exception.getErrors().size());
-        assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
+        final var createdAt = genre.getCreatedAt();
+        final var updatedAt = genre.getUpdatedAt();
+
+        genre.removeCategory(seriesID);
+
+        assertNotNull(genre.getId());
+        assertEquals(expectedName, genre.getName());
+        assertEquals(expectedIsActive, genre.isActive());
+        assertEquals(expectedCategories, genre.getCategories());
+        assertEquals(createdAt, genre.getCreatedAt());
+        assertTrue(genre.getUpdatedAt().isAfter(updatedAt));
+        assertNull(genre.getDeletedAt());
+    }
+
+    @Test
+    public void givenAValidGenreWithCategories_whenCallsRemoveCategory_shouldRemoveCategory() {
+        final var seriesID = CategoryID.from("123");
+        final var moviesID = CategoryID.from("456");
+
+        final var expectedName = "Ação";
+        final var expectedIsActive = true;
+        final var expectedCategories = List.of(seriesID, moviesID);
+
+        final var genre = Genre.newGenre(expectedName, expectedIsActive);
+
+        assertEquals(0, genre.getCategories().size());
+
+        final var createdAt = genre.getCreatedAt();
+        final var updatedAt = genre.getUpdatedAt();
+
+        genre.addCategory(seriesID);
+        genre.addCategory(moviesID);
+
+        assertNotNull(genre.getId());
+        assertEquals(expectedName, genre.getName());
+        assertEquals(expectedIsActive, genre.isActive());
+        assertEquals(expectedCategories, genre.getCategories());
+        assertEquals(createdAt, genre.getCreatedAt());
+        assertTrue(genre.getUpdatedAt().isAfter(updatedAt));
+        assertNull(genre.getDeletedAt());
     }
 }
