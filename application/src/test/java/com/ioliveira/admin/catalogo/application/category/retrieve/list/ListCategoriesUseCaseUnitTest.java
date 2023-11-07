@@ -1,15 +1,13 @@
 package com.ioliveira.admin.catalogo.application.category.retrieve.list;
 
+import com.ioliveira.admin.catalogo.application.UseCaseTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
-import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
-import org.junit.jupiter.api.BeforeEach;
+import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,11 +15,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-public class ListCategoriesUseCaseUnitTest {
+public class ListCategoriesUseCaseUnitTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultListCategoriesUseCase useCase;
@@ -29,9 +25,9 @@ public class ListCategoriesUseCaseUnitTest {
     @Mock
     private CategoryGateway categoryGateway;
 
-    @BeforeEach
-    void cleanUp() {
-        reset(categoryGateway);
+    @Override
+    public List<Object> getMocks() {
+        return List.of(categoryGateway);
     }
 
     @Test

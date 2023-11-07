@@ -1,15 +1,13 @@
 package com.ioliveira.admin.catalogo.application.genre.create;
 
+import com.ioliveira.admin.catalogo.application.UseCaseTest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.genre.GenreGateway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,13 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-public class CreateGenreUseCaseTest {
+public class CreateGenreUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultCreateGenreUseCase useCase;
@@ -37,10 +33,9 @@ public class CreateGenreUseCaseTest {
     @Mock
     private GenreGateway genreGateway;
 
-    @BeforeEach
-    void cleanUp() {
-        reset(categoryGateway);
-        reset(genreGateway);
+    @Override
+    public List<Object> getMocks() {
+        return List.of(genreGateway, categoryGateway);
     }
 
     @Test
@@ -225,5 +220,4 @@ public class CreateGenreUseCaseTest {
     private List<String> categoryIdsAsString(final List<CategoryID> expectedCategories) {
         return expectedCategories.stream().map(CategoryID::getValue).toList();
     }
-
 }
