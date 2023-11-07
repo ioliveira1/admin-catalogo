@@ -1,6 +1,7 @@
 package com.ioliveira.admin.catalogo.application.genre.retrieve.get;
 
 import com.ioliveira.admin.catalogo.application.UseCaseTest;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.get.DefaultGetGenreByIdUseCase;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.domain.genre.Genre;
@@ -52,7 +53,7 @@ public class GetGenreByIdUseCaseTest extends UseCaseTest {
 
         final var actualGenre = useCase.execute(expectedId.getValue());
 
-        assertEquals(expectedId.getValue(), actualGenre.id());
+        assertEquals(expectedId.getValue(), actualGenre.id().getValue());
         assertEquals(expectedName, actualGenre.name());
         assertEquals(expectedIsActive, actualGenre.isActive());
         assertEquals(categoryIdsAsString(expectedCategories), actualGenre.categories());
