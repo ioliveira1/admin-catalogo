@@ -1,8 +1,9 @@
 package com.ioliveira.admin.catalogo.infrastructure.category.persistence;
 
-import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.MySQLGatewayTest;
+import com.ioliveira.admin.catalogo.domain.category.Category;
 import org.hibernate.PropertyValueException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +17,11 @@ public class CategoryRepositoryUnitTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @BeforeEach
+    void cleanUp() {
+        this.categoryRepository.deleteAll();
+    }
 
     @Test
     public void givenAnInvalidNullName_whenCallsSave_shouldReturnError() {

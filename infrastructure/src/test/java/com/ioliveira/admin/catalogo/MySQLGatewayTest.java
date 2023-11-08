@@ -17,8 +17,10 @@ import java.lang.annotation.Target;
 @ActiveProfiles("test-integration")
 @DataJpaTest
 //@ComponentScan("com.ioliveira.admin.catalogo")
-@ComponentScan(includeFilters = {
-        @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[MySQLGateway]")
-})
+@ComponentScan(
+        basePackages = "com.ioliveira.admin.catalogo",
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[MySQLGateway]")
+        })
 public @interface MySQLGatewayTest {
 }

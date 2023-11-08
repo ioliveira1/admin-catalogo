@@ -6,6 +6,7 @@ import com.ioliveira.admin.catalogo.domain.genre.GenreID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.Instant;
@@ -19,6 +20,7 @@ import static javax.persistence.FetchType.EAGER;
 @Table(name = "genres")
 public class GenreJpaEntity {
 
+    @Id
     @Column(name = "id", nullable = false)
     private String id;
 
