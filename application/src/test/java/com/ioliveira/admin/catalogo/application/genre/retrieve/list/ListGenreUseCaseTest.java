@@ -1,6 +1,8 @@
 package com.ioliveira.admin.catalogo.application.genre.retrieve.list;
 
 import com.ioliveira.admin.catalogo.application.UseCaseTest;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.list.DefaultListGenreUseCase;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.list.GenreListOutput;
 import com.ioliveira.admin.catalogo.domain.genre.Genre;
 import com.ioliveira.admin.catalogo.domain.genre.GenreGateway;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
@@ -9,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.List;
 
