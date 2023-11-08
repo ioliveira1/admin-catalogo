@@ -55,6 +55,18 @@ public class Genre extends AggregateRoot<GenreID> {
         );
     }
 
+    public static Genre with(
+            final GenreID id,
+            final String name,
+            final boolean isActive,
+            final List<CategoryID> categories,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Instant deletedAt
+    ) {
+        return new Genre(id, name, isActive, categories, createdAt, updatedAt, deletedAt);
+    }
+
     public Genre update(final String name, final boolean isActive, final List<CategoryID> categories) {
         if (isActive) {
             activate();
