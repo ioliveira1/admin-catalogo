@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,13 +34,6 @@ public class GenreMySQLGatewayTest {
     @BeforeEach
     void cleanUp() {
         this.genreRepository.deleteAll();
-    }
-
-    @Test
-    public void test() {
-        assertNotNull(categoryGateway);
-        assertNotNull(genreGateway);
-        assertNotNull(genreRepository);
     }
 
     @Test
@@ -130,7 +124,7 @@ public class GenreMySQLGatewayTest {
         final var expectedIsActive = true;
         final var expectedCategories = List.of(filmes.getId(), series.getId());
 
-        final var genre = Genre.newGenre("ac", expectedIsActive);
+        final var genre = Genre.newGenre("aca", expectedIsActive);
 
         final var expectedId = genre.getId();
 
@@ -138,7 +132,7 @@ public class GenreMySQLGatewayTest {
 
         genreRepository.saveAndFlush(GenreJpaEntity.from(genre));
 
-        assertEquals("ac", genre.getName());
+        assertEquals("aca", genre.getName());
         assertEquals(0, genre.getCategories().size());
 
         final var actualGenre = genreGateway.update(
@@ -151,7 +145,7 @@ public class GenreMySQLGatewayTest {
         assertEquals(expectedId, actualGenre.getId());
         assertEquals(expectedName, actualGenre.getName());
         assertEquals(expectedIsActive, actualGenre.isActive());
-        assertEquals(expectedCategories, actualGenre.getCategories());
+        assertEquals(sort(expectedCategories), sort(actualGenre.getCategories()));
         assertEquals(genre.getCreatedAt(), actualGenre.getCreatedAt());
         assertTrue(genre.getUpdatedAt().isBefore(actualGenre.getUpdatedAt()));
         assertEquals(genre.getDeletedAt(), actualGenre.getDeletedAt());
@@ -160,11 +154,17 @@ public class GenreMySQLGatewayTest {
 
         assertEquals(expectedName, persistedGenre.getName());
         assertEquals(expectedIsActive, persistedGenre.isActive());
-        assertEquals(expectedCategories, persistedGenre.getCategoryIDs());
+        assertEquals(sort(expectedCategories), sort(persistedGenre.getCategoryIDs()));
         assertEquals(genre.getCreatedAt(), persistedGenre.getCreatedAt());
         assertTrue(genre.getUpdatedAt().isBefore(persistedGenre.getUpdatedAt()));
         assertEquals(genre.getDeletedAt(), persistedGenre.getDeletedAt());
         assertNull(persistedGenre.getDeletedAt());
+    }
+
+    private List<CategoryID> sort(final List<CategoryID> ids) {
+        return ids.stream()
+                .sorted(Comparator.comparing(CategoryID::getValue))
+                .toList();
     }
 
     @Test
@@ -179,7 +179,7 @@ public class GenreMySQLGatewayTest {
         final var expectedIsActive = true;
         final var expectedCategories = List.<CategoryID>of();
 
-        final var genre = Genre.newGenre("ac", expectedIsActive);
+        final var genre = Genre.newGenre("aca", expectedIsActive);
         genre.addCategories(List.of(filmes.getId(), series.getId()));
 
         final var expectedId = genre.getId();
@@ -188,7 +188,7 @@ public class GenreMySQLGatewayTest {
 
         genreRepository.saveAndFlush(GenreJpaEntity.from(genre));
 
-        assertEquals("ac", genre.getName());
+        assertEquals("aca", genre.getName());
         assertEquals(2, genre.getCategories().size());
 
         final var actualGenre = genreGateway.update(

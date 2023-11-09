@@ -40,7 +40,9 @@ public class GenreMySQLGateway implements GenreGateway {
 
     @Override
     public Genre update(final Genre genre) {
-        return null;
+        return this.genreRepository
+                .save(GenreJpaEntity.from(genre))
+                .toAggregate();
     }
 
     @Override
