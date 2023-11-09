@@ -4,6 +4,7 @@ import com.ioliveira.admin.catalogo.MySQLGatewayTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.genre.Genre;
+import com.ioliveira.admin.catalogo.domain.genre.GenreID;
 import com.ioliveira.admin.catalogo.infrastructure.category.CategoryMySQLGateway;
 import com.ioliveira.admin.catalogo.infrastructure.genre.GenreMySQLGateway;
 import org.junit.jupiter.api.BeforeEach;
@@ -161,12 +162,6 @@ public class GenreMySQLGatewayTest {
         assertNull(persistedGenre.getDeletedAt());
     }
 
-    private List<CategoryID> sort(final List<CategoryID> ids) {
-        return ids.stream()
-                .sorted(Comparator.comparing(CategoryID::getValue))
-                .toList();
-    }
-
     @Test
     public void givenAValidGenreWithCategories_whenCallsUpdateGenreCleaningCategories_shouldPersistGenre() {
         final var filmes =
@@ -299,6 +294,34 @@ public class GenreMySQLGatewayTest {
         assertEquals(genre.getCreatedAt(), persistedGenre.getCreatedAt());
         assertTrue(genre.getUpdatedAt().isBefore(persistedGenre.getUpdatedAt()));
         assertNotNull(persistedGenre.getDeletedAt());
+    }
+
+    @Test
+    public void givenAPrePersistedGenre_whenCallsDeleteById_shouldDeleteGenre() {
+        final var genre = Genre.newGenre("Ação", true);
+
+        genreRepository.saveAndFlush(GenreJpaEntity.from(genre));
+
+        assertEquals(1, genreRepository.count());
+
+        genreGateway.deleteById(genre.getId());
+
+        assertEquals(0, genreRepository.count());
+    }
+
+    @Test
+    public void givenAnInvalidGenre_whenCallsDeleteById_shouldReturnOK() {
+        assertEquals(0, genreRepository.count());
+
+        genreGateway.deleteById(GenreID.from("123"));
+
+        assertEquals(0, genreRepository.count());
+    }
+
+    private List<CategoryID> sort(final List<CategoryID> ids) {
+        return ids.stream()
+                .sorted(Comparator.comparing(CategoryID::getValue))
+                .toList();
     }
 
 }
