@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
@@ -83,9 +84,7 @@ public class GenreJpaEntity {
                 GenreID.from(getId()),
                 getName(),
                 isActive(),
-                getCategories().stream()
-                        .map(x -> CategoryID.from(x.getId().getCategoryId()))
-                        .toList(),
+                getCategoryIDs(),
                 getCreatedAt(),
                 getUpdatedAt(),
                 getDeletedAt()
@@ -98,6 +97,12 @@ public class GenreJpaEntity {
 
     private void removeCategory(final CategoryID id) {
         this.categories.remove(GenreCategoryJpaEntity.from(this, id));
+    }
+
+    public List<CategoryID> getCategoryIDs() {
+        return getCategories().stream()
+                .map(genreCategoryEntity -> CategoryID.from(genreCategoryEntity.getId().getCategoryId()))
+                .toList();
     }
 
     public String getId() {
