@@ -14,13 +14,15 @@ import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Objects;
+
 @Configuration
 public class CategoryUseCaseConfig {
 
     private final CategoryGateway categoryGateway;
 
     public CategoryUseCaseConfig(final CategoryGateway categoryGateway) {
-        this.categoryGateway = categoryGateway;
+        this.categoryGateway = Objects.requireNonNull(categoryGateway);
     }
 
     @Bean
