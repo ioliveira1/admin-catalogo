@@ -4,6 +4,7 @@ import com.ioliveira.admin.catalogo.IntegrationTest;
 import com.ioliveira.admin.catalogo.domain.genre.Genre;
 import com.ioliveira.admin.catalogo.domain.genre.GenreGateway;
 import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +21,11 @@ public class DeleteGenreUseCaseIT {
 
     @Autowired
     private GenreGateway genreGateway;
+
+    @BeforeEach
+    void cleanUp() {
+        this.genreRepository.deleteAll();
+    }
 
     @Test
     public void givenAValidGenreId_whenCallsDeleteGenre_shouldDeleteGenre() {

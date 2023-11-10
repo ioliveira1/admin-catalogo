@@ -7,6 +7,7 @@ import com.ioliveira.admin.catalogo.domain.genre.Genre;
 import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +24,11 @@ public class ListGenreUseCaseIT {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    @BeforeEach
+    void cleanUp() {
+        this.genreRepository.deleteAll();
+    }
 
     @Test
     public void givenAValidQuery_whenCallsListGenre_shouldReturnGenres() {
