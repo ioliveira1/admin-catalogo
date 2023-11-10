@@ -1,10 +1,10 @@
 package com.ioliveira.admin.catalogo.infrastructure.category;
 
+import com.ioliveira.admin.catalogo.MySQLGatewayTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
-import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
-import com.ioliveira.admin.catalogo.MySQLGatewayTest;
+import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -324,5 +325,36 @@ public class CategoryMySQLGatewayTest {
         Assertions.assertEquals(expectedTotal, result.total());
         Assertions.assertEquals(expectedTotal, result.items().size());
         Assertions.assertEquals(filmes.getId(), result.items().get(0).getId());
+    }
+
+    @Test
+    public void givenPrePersistedCategories_whenCallsExistsByIds_shouldReturnIds() {
+        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true);
+        final var series = Category.newCategory("Séries", "Uma categoria assistida", true);
+        final var documentarios = Category.newCategory("Documentários", "A categoria menos assistida", true);
+
+        final var expectedCategories = List.of(filmes.getId(), series.getId());
+
+        assertEquals(0, categoryRepository.count());
+
+        categoryRepository.saveAllAndFlush(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        assertEquals(3, categoryRepository.count());
+
+        final var ids = List.of(filmes.getId(), series.getId(), CategoryID.from("89987"));
+
+        final var result = categoryMySQLGateway.existsByIds(ids);
+
+        Assertions.assertEquals(sorted(expectedCategories), sorted(result));
+    }
+
+    private List<CategoryID> sorted(final List<CategoryID> categoryIDS) {
+        return categoryIDS.stream()
+                .sorted(Comparator.comparing(CategoryID::getValue))
+                .toList();
     }
 }

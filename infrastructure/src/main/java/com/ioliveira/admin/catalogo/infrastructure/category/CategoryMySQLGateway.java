@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,14 +86,24 @@ public class CategoryMySQLGateway implements CategoryGateway {
     }
 
     @Override
-    public List<CategoryID> existsByIds(final List<CategoryID> ids) {
-        //TODO implementar quando chegar na camada de infra
-        return Collections.emptyList();
+    public List<CategoryID> existsByIds(final List<CategoryID> categoryIDS) {
+        final List<String> ids = categoryIDS.stream()
+                .map(CategoryID::getValue)
+                .toList();
+
+        return this.repository
+                .findByIdIn(ids).stream()
+                .map(this::categoryJpaEntityToCategoryId)
+                .toList();
     }
 
     private Specification<CategoryJpaEntity> specification(final String term) {
         final Specification<CategoryJpaEntity> nameLike = like("name", term);
         final Specification<CategoryJpaEntity> descriptionLike = like("description", term);
         return nameLike.or(descriptionLike);
+    }
+
+    private CategoryID categoryJpaEntityToCategoryId(final CategoryJpaEntity entity) {
+        return CategoryID.from(entity.getId());
     }
 }
