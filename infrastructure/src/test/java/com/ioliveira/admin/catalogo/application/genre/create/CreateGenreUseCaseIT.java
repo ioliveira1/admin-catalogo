@@ -43,10 +43,12 @@ public class CreateGenreUseCaseIT {
     public void givenAValidCommand_WhenCallsCreateGenreUseCase_ShouldReturnGenreId() {
         final var filmes = Category.newCategory("Filmes", null, true);
         final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
 
         final var categories = List.of(
                 CategoryJpaEntity.from(filmes),
-                CategoryJpaEntity.from(series)
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
         );
 
         assertEquals(0, categoryRepository.count());
@@ -54,7 +56,7 @@ public class CreateGenreUseCaseIT {
 
         categoryRepository.saveAllAndFlush(categories);
 
-        assertEquals(2, categoryRepository.count());
+        assertEquals(3, categoryRepository.count());
 
         final var expectedName = "Ação";
         final var expectedIsActive = true;
