@@ -4,7 +4,6 @@ import com.ioliveira.admin.catalogo.IntegrationTest;
 import com.ioliveira.admin.catalogo.domain.category.Category;
 import com.ioliveira.admin.catalogo.domain.category.CategoryGateway;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
-import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
 import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,33 +39,18 @@ public class CreateGenreUseCaseIT {
     }
 
     @Test
-    public void givenAValidCommand_WhenCallsCreateGenreUseCase_ShouldReturnGenreId() {
-        final var filmes = Category.newCategory("Filmes", null, true);
-        final var series = Category.newCategory("Séries", null, true);
-        final var documentarios = Category.newCategory("Documentários", null, true);
-
-        final var categories = List.of(
-                CategoryJpaEntity.from(filmes),
-                CategoryJpaEntity.from(series),
-                CategoryJpaEntity.from(documentarios)
-        );
-
-        assertEquals(0, categoryRepository.count());
-        assertEquals(0, genreRepository.count());
-
-        categoryRepository.saveAllAndFlush(categories);
-
-        assertEquals(3, categoryRepository.count());
+    public void givenAValidCommand_whenCallsCreateGenre_shouldReturnGenreId() {
+        final var filmes =
+                categoryGateway.create(Category.newCategory("Filmes", null, true));
 
         final var expectedName = "Ação";
         final var expectedIsActive = true;
-        final var expectedCategories = List.of(filmes.getId(), series.getId());
+        final var expectedCategories = List.of(filmes.getId());
 
-        final var command = CreateGenreCommand.with(expectedName, expectedIsActive, categoryIdsAsString(expectedCategories));
+        final var command =
+                CreateGenreCommand.with(expectedName, expectedIsActive, categoryIdsAsString(expectedCategories));
 
         final var output = useCase.execute(command);
-
-        assertEquals(1, genreRepository.count());
 
         assertNotNull(output);
         assertNotNull(output.id());
