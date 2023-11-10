@@ -73,9 +73,10 @@ public class GetGenreByIdUseCaseTest extends UseCaseTest {
         when(genreGateway.findById(eq(expectedId)))
                 .thenReturn(Optional.empty());
 
-        final var actualException = Assertions.assertThrows(NotFoundException.class, () -> {
-            useCase.execute(expectedId.getValue());
-        });
+        final var actualException = Assertions.assertThrows(
+                NotFoundException.class,
+                () -> useCase.execute(expectedId.getValue())
+        );
 
         assertEquals(expectedErrorMessage, actualException.getMessage());
     }

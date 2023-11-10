@@ -141,9 +141,10 @@ public class CreateGenreUseCaseTest extends UseCaseTest {
         final var command =
                 CreateGenreCommand.with(expectName, expectedIsActive, categoryIdsAsString(expectedCategories));
 
-        final var exception = assertThrows(NotificationException.class, () -> {
-            useCase.execute(command);
-        });
+        final var exception = assertThrows(
+                NotificationException.class,
+                () -> useCase.execute(command)
+        );
 
         assertNotNull(exception);
         assertEquals(expectedErrorCount, exception.getErrors().size());
@@ -172,9 +173,10 @@ public class CreateGenreUseCaseTest extends UseCaseTest {
         final var command =
                 CreateGenreCommand.with(expectName, expectedIsActive, categoryIdsAsString(expectedCategories));
 
-        final var exception = assertThrows(NotificationException.class, () -> {
-            useCase.execute(command);
-        });
+        final var exception = assertThrows(
+                NotificationException.class,
+                () -> useCase.execute(command)
+        );
 
         assertNotNull(exception);
         assertEquals(expectedErrorCount, exception.getErrors().size());
@@ -204,9 +206,10 @@ public class CreateGenreUseCaseTest extends UseCaseTest {
         final var command =
                 CreateGenreCommand.with(expectName, expectedIsActive, categoryIdsAsString(expectedCategories));
 
-        final var exception = assertThrows(NotificationException.class, () -> {
-            useCase.execute(command);
-        });
+        final var exception = assertThrows(
+                NotificationException.class,
+                () -> useCase.execute(command)
+        );
 
         assertNotNull(exception);
         assertEquals(expectedErrorCount, exception.getErrors().size());

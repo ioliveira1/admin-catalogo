@@ -64,9 +64,7 @@ public class DeleteGenreUseCaseTest extends UseCaseTest {
         doThrow(new IllegalStateException("Gateway error"))
                 .when(genreGateway).deleteById(any());
 
-        assertThrows(IllegalStateException.class, () -> {
-            useCase.execute(expectedId.getValue());
-        });
+        assertThrows(IllegalStateException.class, () -> useCase.execute(expectedId.getValue()));
 
         verify(genreGateway, times(1)).deleteById(expectedId);
     }

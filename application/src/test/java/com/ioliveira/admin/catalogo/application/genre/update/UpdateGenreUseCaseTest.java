@@ -154,9 +154,10 @@ public class UpdateGenreUseCaseTest extends UseCaseTest {
         when(genreGateway.findById(any()))
                 .thenReturn(Optional.of(Genre.clone(genre)));
 
-        final var exception = assertThrows(NotificationException.class, () -> {
-            useCase.execute(command);
-        });
+        final var exception = assertThrows(
+                NotificationException.class,
+                () -> useCase.execute(command)
+        );
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessage, exception.getErrors().get(0).message());
@@ -198,9 +199,10 @@ public class UpdateGenreUseCaseTest extends UseCaseTest {
         when(categoryGateway.existsByIds(any()))
                 .thenReturn(List.of(filmes));
 
-        final var exception = assertThrows(NotificationException.class, () -> {
-            useCase.execute(command);
-        });
+        final var exception = assertThrows(
+                NotificationException.class,
+                () -> useCase.execute(command)
+        );
 
         assertEquals(expectedErrorCount, exception.getErrors().size());
         assertEquals(expectedErrorMessageOne, exception.getErrors().get(0).message());
