@@ -3,6 +3,7 @@ package com.ioliveira.admin.catalogo.infrastructure.api.controllers;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreCommand;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
+import com.ioliveira.admin.catalogo.application.genre.delete.DeleteGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GetGenreByIdUseCase;
 import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreCommand;
 import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreUseCase;
@@ -25,15 +26,18 @@ public class GenreController implements GenreAPI {
     private final CreateGenreUseCase createGenreUseCase;
     private final GetGenreByIdUseCase getGenreByIdUseCase;
     private final UpdateGenreUseCase updateGenreUseCase;
+    private final DeleteGenreUseCase deleteGenreUseCase;
 
     public GenreController(
             final CreateGenreUseCase createGenreUseCase,
             final GetGenreByIdUseCase getGenreByIdUseCase,
-            final UpdateGenreUseCase updateGenreUseCase) {
+            final UpdateGenreUseCase updateGenreUseCase,
+            final DeleteGenreUseCase deleteGenreUseCase) {
 
         this.createGenreUseCase = Objects.requireNonNull(createGenreUseCase);
         this.getGenreByIdUseCase = Objects.requireNonNull(getGenreByIdUseCase);
         this.updateGenreUseCase = Objects.requireNonNull(updateGenreUseCase);
+        this.deleteGenreUseCase = Objects.requireNonNull(deleteGenreUseCase);
     }
 
     @Override
@@ -71,6 +75,6 @@ public class GenreController implements GenreAPI {
 
     @Override
     public void deleteById(final String id) {
-
+        this.deleteGenreUseCase.execute(id);
     }
 }
