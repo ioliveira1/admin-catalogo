@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ioliveira.admin.catalogo.ControllerTest;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
+import com.ioliveira.admin.catalogo.application.genre.delete.DeleteGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GetGenreByIdUseCase;
 import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreOutput;
@@ -32,8 +33,10 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -59,6 +62,9 @@ public class GenreAPITest {
 
     @MockBean
     private UpdateGenreUseCase updateGenreUseCase;
+
+    @MockBean
+    private DeleteGenreUseCase deleteGenreUseCase;
 
     @Test
     public void givenAValidCommand_WhenCallsCreateGenreApi_ShouldReturnGenreId() throws Exception {
@@ -228,6 +234,36 @@ public class GenreAPITest {
                         && Objects.equals(sorted(expectedCategories), sorted(cmd.categories()))
                         && Objects.equals(expectedIsActive, cmd.isActive())
         ));
+    }
+
+    @Test
+    public void givenAValidId_whenCallsDeleteGenreApi_shouldReturnNoContent() throws Exception {
+        final var expectedId = "123";
+
+        doNothing().when(deleteGenreUseCase).execute(any());
+
+        final var request = delete("/genres/{id}", expectedId);
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(deleteGenreUseCase).execute(expectedId);
+    }
+
+    @Test
+    public void givenAnInvalidId_whenCallsDeleteGenreApi_shouldReturnNoContent() throws Exception {
+        final var expectedId = "invalid";
+
+        doNothing().when(deleteGenreUseCase).execute(any());
+
+        final var request = delete("/genres/{id}", expectedId);
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(deleteGenreUseCase).execute(expectedId);
     }
 
     private List<String> sorted(final List<String> categories) {
