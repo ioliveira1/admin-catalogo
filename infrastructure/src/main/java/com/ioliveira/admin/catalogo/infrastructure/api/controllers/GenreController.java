@@ -1,5 +1,8 @@
 package com.ioliveira.admin.catalogo.infrastructure.api.controllers;
 
+import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreCommand;
+import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
+import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.infrastructure.api.GenreAPI;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
@@ -9,12 +12,29 @@ import com.ioliveira.admin.catalogo.infrastructure.genre.models.UpdateGenreReque
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+import java.util.Objects;
+
 @RestController
 public class GenreController implements GenreAPI {
 
+    private final CreateGenreUseCase createGenreUseCase;
+
+    public GenreController(final CreateGenreUseCase createGenreUseCase) {
+        this.createGenreUseCase = Objects.requireNonNull(createGenreUseCase);
+    }
+
     @Override
     public ResponseEntity<?> createGenre(final CreateGenreRequest input) {
-        return null;
+
+        final CreateGenreCommand command =
+                CreateGenreCommand.with(input.name(), input.isActive(), input.categories());
+
+        final CreateGenreOutput output = this.createGenreUseCase.execute(command);
+
+        return ResponseEntity
+                .created(URI.create("/genres/" + output.id()))
+                .body(output);
     }
 
     @Override
