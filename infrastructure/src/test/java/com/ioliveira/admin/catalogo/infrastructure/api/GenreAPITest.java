@@ -180,7 +180,7 @@ public class GenreAPITest {
         final var expectedCategories = List.of("123", "456");
 
         final var genre = Genre.newGenre(expectedName, expectedIsActive);
-        final var expectedId = genre.getId();
+        final var expectedId = genre.getId().getValue();
 
         final var updateGenreRequest = new UpdateGenreRequest(expectedName, expectedCategories, expectedIsActive);
 
@@ -188,6 +188,7 @@ public class GenreAPITest {
                 .thenReturn(UpdateGenreOutput.from(genre));
 
         final var request = put("/genres/{id}", expectedId)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(updateGenreRequest));
 
         this.mvc.perform(request)
@@ -203,30 +204,26 @@ public class GenreAPITest {
 
     @Test
     public void givenAnInvalidName_WhenCallsUpdateGenreApi_ShouldReturnNotification() throws Exception {
-        final var expectedName = "Ação";
         final var expectedIsActive = true;
         final var expectedCategories = List.of("123", "456");
         final var expectedErrorMessage = "'name' should not be null";
 
-        final var genre = Genre.newGenre(expectedName, expectedIsActive);
-        final var expectedId = genre.getId();
-
-        final var updateGenreRequest = new UpdateGenreRequest(expectedName, expectedCategories, expectedIsActive);
+        final var updateGenreRequest = new UpdateGenreRequest(null, expectedCategories, expectedIsActive);
 
         when(updateGenreUseCase.execute(any()))
                 .thenThrow(new NotificationException("Error", Notification.create(new Error(expectedErrorMessage))));
 
-        final var request = put("/genres/{id}", expectedId)
+        final var request = put("/genres/{id}", "123")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(updateGenreRequest));
 
         this.mvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(header().string("Location", nullValue()))
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
 
-        verify(createGenreUseCase).execute(argThat(cmd ->
+        verify(updateGenreUseCase).execute(argThat(cmd ->
                 Objects.equals(null, cmd.name())
                         && Objects.equals(sorted(expectedCategories), sorted(cmd.categories()))
                         && Objects.equals(expectedIsActive, cmd.isActive())

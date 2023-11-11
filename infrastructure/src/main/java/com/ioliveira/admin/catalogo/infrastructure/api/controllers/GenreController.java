@@ -4,6 +4,8 @@ import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreCommand;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GetGenreByIdUseCase;
+import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreCommand;
+import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreUseCase;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.infrastructure.api.GenreAPI;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
@@ -22,13 +24,16 @@ public class GenreController implements GenreAPI {
 
     private final CreateGenreUseCase createGenreUseCase;
     private final GetGenreByIdUseCase getGenreByIdUseCase;
+    private final UpdateGenreUseCase updateGenreUseCase;
 
     public GenreController(
             final CreateGenreUseCase createGenreUseCase,
-            final GetGenreByIdUseCase getGenreByIdUseCase) {
+            final GetGenreByIdUseCase getGenreByIdUseCase,
+            final UpdateGenreUseCase updateGenreUseCase) {
 
         this.createGenreUseCase = Objects.requireNonNull(createGenreUseCase);
         this.getGenreByIdUseCase = Objects.requireNonNull(getGenreByIdUseCase);
+        this.updateGenreUseCase = Objects.requireNonNull(updateGenreUseCase);
     }
 
     @Override
@@ -57,7 +62,11 @@ public class GenreController implements GenreAPI {
 
     @Override
     public ResponseEntity<?> updateById(final String id, final UpdateGenreRequest input) {
-        return null;
+
+        final UpdateGenreCommand command =
+                UpdateGenreCommand.with(id, input.name(), input.isActive(), input.categories());
+
+        return ResponseEntity.ok(this.updateGenreUseCase.execute(command));
     }
 
     @Override
