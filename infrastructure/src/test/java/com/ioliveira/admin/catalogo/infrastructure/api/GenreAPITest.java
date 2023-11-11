@@ -7,6 +7,8 @@ import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.delete.DeleteGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GetGenreByIdUseCase;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.list.GenreListOutput;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.list.ListGenreUseCase;
 import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.update.UpdateGenreUseCase;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
@@ -14,6 +16,7 @@ import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.genre.Genre;
 import com.ioliveira.admin.catalogo.domain.genre.GenreID;
+import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.domain.validation.Error;
 import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
@@ -65,6 +68,9 @@ public class GenreAPITest {
 
     @MockBean
     private DeleteGenreUseCase deleteGenreUseCase;
+
+    @MockBean
+    private ListGenreUseCase listGenreUseCase;
 
     @Test
     public void givenAValidCommand_WhenCallsCreateGenreApi_ShouldReturnGenreId() throws Exception {
@@ -264,6 +270,53 @@ public class GenreAPITest {
                 .andExpect(status().isNoContent());
 
         verify(deleteGenreUseCase).execute(expectedId);
+    }
+
+    @Test
+    public void givenAValidParam_whenCallsListGenresApi_shouldReturnGenres() throws Exception {
+        final Genre genre = Genre.newGenre("Ação", false);
+
+        final var expectedPage = 0;
+        final var expectedPerPage = 10;
+        final var expectedTerms = "ac";
+        final var expectedSort = "name";
+        final var expectedDirection = "asc";
+        final var expectedItemsCount = 1;
+        final var expectedTotal = 1;
+
+        final var expectedItems = List.of(GenreListOutput.from(genre));
+
+        when(listGenreUseCase.execute(any()))
+                .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
+
+        final var request = get("/genres")
+                .queryParam("page", String.valueOf(expectedPage))
+                .queryParam("perPage", String.valueOf(expectedPerPage))
+                .queryParam("sort", expectedSort)
+                .queryParam("dir", expectedDirection)
+                .queryParam("search", expectedTerms);
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(expectedPage)))
+                .andExpect(jsonPath("$.per_page", equalTo(expectedPerPage)))
+                .andExpect(jsonPath("$.total", equalTo(expectedTotal)))
+                .andExpect(jsonPath("$.items", hasSize(expectedItemsCount)))
+                .andExpect(jsonPath("$.items[0].id", equalTo(genre.getId().getValue())))
+                .andExpect(jsonPath("$.items[0].name", equalTo(genre.getName())))
+                .andExpect(jsonPath("$.items[0].is_active", equalTo(genre.isActive())))
+                .andExpect(jsonPath("$.items[0].created_at", equalTo(genre.getCreatedAt().toString())))
+                .andExpect(jsonPath("$.items[0].deleted_at", equalTo(genre.getDeletedAt().toString())));
+
+        verify(listGenreUseCase).execute(argThat(query ->
+                Objects.equals(expectedPage, query.page())
+                        && Objects.equals(expectedPerPage, query.perPage())
+                        && Objects.equals(expectedDirection, query.direction())
+                        && Objects.equals(expectedSort, query.sort())
+                        && Objects.equals(expectedTerms, query.terms())
+        ));
+
     }
 
     private List<String> sorted(final List<String> categories) {
