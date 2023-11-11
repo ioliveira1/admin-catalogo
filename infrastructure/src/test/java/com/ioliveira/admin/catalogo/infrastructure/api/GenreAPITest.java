@@ -4,7 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ioliveira.admin.catalogo.ControllerTest;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GenreOutput;
+import com.ioliveira.admin.catalogo.application.genre.retreieve.get.GetGenreByIdUseCase;
+import com.ioliveira.admin.catalogo.domain.category.CategoryID;
+import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
+import com.ioliveira.admin.catalogo.domain.genre.Genre;
+import com.ioliveira.admin.catalogo.domain.genre.GenreID;
 import com.ioliveira.admin.catalogo.domain.validation.Error;
 import com.ioliveira.admin.catalogo.domain.validation.handler.Notification;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
@@ -22,8 +28,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -41,6 +49,9 @@ public class GenreAPITest {
 
     @MockBean
     private CreateGenreUseCase createGenreUseCase;
+
+    @MockBean
+    private GetGenreByIdUseCase getGenreByIdUseCase;
 
     @Test
     public void givenAValidCommand_WhenCallsCreateGenreApi_ShouldReturnGenreId() throws Exception {
@@ -99,6 +110,60 @@ public class GenreAPITest {
                         && Objects.equals(sorted(expectedCategories), sorted(cmd.categories()))
                         && Objects.equals(expectedIsActive, cmd.isActive())
         ));
+    }
+
+    @Test
+    public void givenAValidId_whenCallsGetGenreApi_shouldReturnGenre() throws Exception {
+        final var expectedName = "Ação";
+        final var expectedIsActive = false;
+        final var expectedCategories = List.of("123", "456");
+
+        final Genre genre = Genre
+                .newGenre(expectedName, expectedIsActive)
+                .addCategories(
+                        expectedCategories.stream()
+                                .map(CategoryID::from)
+                                .toList()
+                );
+
+        final var expectedId = genre.getId().getValue();
+
+        when(getGenreByIdUseCase.execute(any()))
+                .thenReturn(GenreOutput.from(genre));
+
+        final var request = get("/genres/{id}", expectedId);
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(expectedId)))
+                .andExpect(jsonPath("$.name", equalTo(expectedName)))
+                .andExpect(jsonPath("$.categories_id", equalTo(expectedCategories)))
+                .andExpect(jsonPath("$.is_active", equalTo(genre.isActive())))
+                .andExpect(jsonPath("$.created_at", equalTo(genre.getCreatedAt().toString())))
+                .andExpect(jsonPath("$.updated_at", equalTo(genre.getUpdatedAt().toString())))
+                .andExpect(jsonPath("$.deleted_at", equalTo(genre.getDeletedAt().toString())));
+
+        verify(getGenreByIdUseCase).execute(eq(expectedId));
+    }
+
+    @Test
+    public void givenAnInvalidId_whenCallsGetGenreApi_shouldReturnNotFound() throws Exception {
+        final var expectedErrorMessage = "Genre with ID 123 was not found";
+
+        final var expectedId = GenreID.from("123");
+
+        when(getGenreByIdUseCase.execute(any()))
+                .thenThrow(NotFoundException.with(Genre.class, expectedId));
+
+        final var request = get("/genres/{id}", expectedId.getValue());
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        verify(getGenreByIdUseCase).execute(eq(expectedId.getValue()));
     }
 
     private List<String> sorted(final List<String> categories) {
