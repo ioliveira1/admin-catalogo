@@ -31,7 +31,7 @@ public interface MockDsl {
     MockMvc mvc();
 
     default ResultActions deleteACategory(final Identifier identifier) throws Exception {
-        return this.delete("/categories", identifier);
+        return this.delete("/categories/", identifier);
     }
 
     default CategoryID givenACategory(final String name, final String description, final boolean isActive) throws Exception {
@@ -61,6 +61,10 @@ public interface MockDsl {
 
     default ResultActions updateACategory(final Identifier id, final UpdateCategoryRequest request) throws Exception {
         return this.update("/categories/", id, request);
+    }
+
+    default void deleteAGenre(final Identifier identifier) throws Exception {
+        this.delete("/genres/", identifier);
     }
 
     default GenreID givenAGenre(final String name, final List<CategoryID> expectedCategories, final boolean isActive) throws Exception {
@@ -132,7 +136,7 @@ public interface MockDsl {
     }
 
     private ResultActions delete(final String url, final Identifier id) throws Exception {
-        final var request = MockMvcRequestBuilders.delete(url, id.getValue());
+        final var request = MockMvcRequestBuilders.delete(url + id.getValue());
         return this.mvc().perform(request);
     }
 

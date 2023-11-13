@@ -274,6 +274,23 @@ public class GenreE2ETest implements MockDsl {
         assertNull(persistedGenre.getDeletedAt());
     }
 
+    @Test
+    public void asACatalogAdminIShouldBeAbleToDeleteAGenreById() throws Exception {
+        assertEquals(0, genreRepository.count());
+
+        final var expectedName = "Ação";
+        final var expectedCategories = List.<CategoryID>of();
+        final var expectedIsActive = true;
+
+        final var id = givenAGenre(expectedName, expectedCategories, expectedIsActive);
+
+        assertEquals(1, genreRepository.count());
+
+        deleteAGenre(id);
+
+        assertEquals(0, genreRepository.count());
+    }
+
     private ResultActions listGenres(final int page, final int perPage, final String search) throws Exception {
         return listGenres(page, perPage, "", "", search);
     }
