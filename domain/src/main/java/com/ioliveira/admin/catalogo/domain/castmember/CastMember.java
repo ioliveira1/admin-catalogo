@@ -29,6 +29,14 @@ public class CastMember extends AggregateRoot<CastMemberID> {
         return new CastMember(CastMemberID.unique(), name, type, now, now);
     }
 
+    public CastMember update(final String name, final CastMemberType type) {
+        this.name = name;
+        this.type = type;
+        this.updatedAt = Instant.now();
+        selfValidate();
+        return this;
+    }
+
     private void selfValidate() {
         final Notification notification = Notification.create();
         validate(notification);
@@ -58,4 +66,5 @@ public class CastMember extends AggregateRoot<CastMemberID> {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
 }
