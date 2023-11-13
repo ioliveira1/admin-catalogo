@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -198,6 +199,44 @@ public class GenreE2ETest implements MockDsl {
                 .andExpect(jsonPath("$.items[0].name", equalTo("Esportes")))
                 .andExpect(jsonPath("$.items[1].name", equalTo("Drama")))
                 .andExpect(jsonPath("$.items[2].name", equalTo("Ação")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToGetAGenreById() throws Exception {
+        assertEquals(0, genreRepository.count());
+        assertEquals(0, categoryRepository.count());
+
+        final var filmes = givenACategory("Filmes", null, true);
+
+        final var expectedName = "Ação";
+        final var expectedCategories = List.of(filmes);
+        final var expectedIsActive = true;
+
+        final var id = givenAGenre(expectedName, expectedCategories, expectedIsActive);
+
+        final var genre = retrieveAGenre(id);
+
+        assertEquals(1, genreRepository.count());
+        assertEquals(1, categoryRepository.count());
+
+        assertEquals(expectedName, genre.name());
+        assertEquals(expectedIsActive, genre.active());
+        assertEquals(sorted(expectedCategories), sorted(genre.categories().stream().map(CategoryID::from).toList()));
+        assertNotNull(genre.createdAt());
+        assertNotNull(genre.updatedAt());
+        assertNull(genre.deletedAt());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToSeeATreatedErrorWhenGenreNotFound() throws Exception {
+
+        assertEquals(0, genreRepository.count());
+
+        final var request = get("/genres/123");
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(jsonPath("$.message", equalTo("Genre with ID 123 was not found")));
     }
 
     private ResultActions listGenres(final int page, final int perPage, final String search) throws Exception {
