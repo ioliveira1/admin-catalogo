@@ -1,11 +1,9 @@
 package com.ioliveira.admin.catalogo.domain.castmember;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CastMemberTest {
 
@@ -16,7 +14,7 @@ public class CastMemberTest {
 
         final var actualMember = CastMember.newMember(expectedName, expectedType);
 
-        assertTrue(actualMember);
+        assertNotNull(actualMember);
         assertNotNull(actualMember.getId());
         assertEquals(expectedName, actualMember.getName());
         assertEquals(expectedType, actualMember.getType());
