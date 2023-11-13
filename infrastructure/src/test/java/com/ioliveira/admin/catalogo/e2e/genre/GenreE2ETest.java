@@ -4,6 +4,8 @@ import com.ioliveira.admin.catalogo.E2ETest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.e2e.MockDsl;
 import com.ioliveira.admin.catalogo.infrastructure.category.persistence.CategoryRepository;
+import com.ioliveira.admin.catalogo.infrastructure.genre.models.UpdateGenreRequest;
+import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.genre.persistence.GenreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -237,6 +239,39 @@ public class GenreE2ETest implements MockDsl {
         this.mvc.perform(request)
                 .andDo(print())
                 .andExpect(jsonPath("$.message", equalTo("Genre with ID 123 was not found")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToUpdateAGenreById() throws Exception {
+        final var filmes = givenACategory("Filmes", null, true);
+        final var expectedName = "Ação";
+        final var expectedCategories = List.of(filmes);
+        final var expectedIsActive = true;
+
+        assertEquals(0, genreRepository.count());
+
+        final var id = givenAGenre("acccao", expectedCategories, expectedIsActive);
+
+        assertEquals(1, genreRepository.count());
+
+        final var requestBody = new UpdateGenreRequest(
+                expectedName,
+                mapTo(expectedCategories, CategoryID::getValue),
+                expectedIsActive
+        );
+
+        updateAGenre(id, requestBody)
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        final GenreJpaEntity persistedGenre = genreRepository.findById(id.getValue()).get();
+
+        assertEquals(expectedName, persistedGenre.getName());
+        assertEquals(sorted(expectedCategories), sorted(persistedGenre.getCategoryIDs()));
+        assertEquals(expectedIsActive, persistedGenre.isActive());
+        assertNotNull(persistedGenre.getCreatedAt());
+        assertNotNull(persistedGenre.getUpdatedAt());
+        assertNull(persistedGenre.getDeletedAt());
     }
 
     private ResultActions listGenres(final int page, final int perPage, final String search) throws Exception {

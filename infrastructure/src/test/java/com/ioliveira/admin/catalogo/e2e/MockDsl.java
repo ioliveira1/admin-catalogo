@@ -8,6 +8,7 @@ import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategor
 import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.GenreResponse;
+import com.ioliveira.admin.catalogo.infrastructure.genre.models.UpdateGenreRequest;
 import com.ioliveira.admin.catalogo.infrastructure.json.Json;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -73,6 +74,10 @@ public interface MockDsl {
 
     default GenreResponse retrieveAGenre(final Identifier id) throws Exception {
         return this.retrieve("/genres/", id, GenreResponse.class);
+    }
+
+    default ResultActions updateAGenre(final Identifier id, final UpdateGenreRequest request) throws Exception {
+        return this.update("/genres/", id, request);
     }
 
     default <IN, OUT> List<OUT> mapTo(final List<IN> list, final Function<IN, OUT> mapper) {
