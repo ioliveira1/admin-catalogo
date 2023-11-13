@@ -6,8 +6,8 @@ import com.ioliveira.admin.catalogo.domain.validation.Validator;
 
 public class GenreValidator extends Validator {
 
-    public static final int NAME_MAX_LENGTH = 255;
-    public static final int NAME_MIN_LENGTH = 3;
+    private static final int NAME_MAX_LENGTH = 255;
+    private static final int NAME_MIN_LENGTH = 3;
     private final Genre genre;
 
     protected GenreValidator(final ValidationHandler handler, final Genre genre) {
