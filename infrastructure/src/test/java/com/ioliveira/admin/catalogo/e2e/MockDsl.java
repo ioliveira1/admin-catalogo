@@ -1,25 +1,36 @@
 package com.ioliveira.admin.catalogo.e2e;
 
+import com.ioliveira.admin.catalogo.domain.Identifier;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.genre.GenreID;
+import com.ioliveira.admin.catalogo.infrastructure.category.models.CategoryResponse;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;
+import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
 import com.ioliveira.admin.catalogo.infrastructure.genre.models.CreateGenreRequest;
 import com.ioliveira.admin.catalogo.infrastructure.json.Json;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public interface MockDsl {
 
     MockMvc mvc();
+
+    default ResultActions deleteACategory(final Identifier identifier) throws Exception {
+        return this.delete("/categories", identifier);
+    }
 
     default CategoryID givenACategory(final String name, final String description, final boolean isActive) throws Exception {
         final String id = this.given(
@@ -28,6 +39,26 @@ public interface MockDsl {
         );
 
         return CategoryID.from(id);
+    }
+
+    default ResultActions listCategories(final int page, final int perPage, final String search) throws Exception {
+        return listCategories(page, perPage, "", "", search);
+    }
+
+    default ResultActions listCategories(final int page, final int perPage) throws Exception {
+        return listCategories(page, perPage, "", "", "");
+    }
+
+    default ResultActions listCategories(final int page, final int perPage, final String sort, final String direction, final String search) throws Exception {
+        return this.list("/categories", page, perPage, sort, direction, search);
+    }
+
+    default CategoryResponse retrieveACategory(final Identifier id) throws Exception {
+        return this.retrieve("/categories/", id, CategoryResponse.class);
+    }
+
+    default ResultActions updateACategory(final Identifier id, final UpdateCategoryRequest request) throws Exception {
+        return this.update("/categories/", id, request);
     }
 
     default GenreID givenAGenre(final String name, final List<CategoryID> expectedCategories, final boolean isActive) throws Exception {
@@ -62,6 +93,43 @@ public interface MockDsl {
                         .andExpect(status().isCreated())
                         .andReturn().getResponse().getHeader("Location")
         ).replace("%s/".formatted(url), "");
+    }
+
+    private ResultActions list(final String url, final int page, final int perPage, final String sort, final String direction, final String search) throws Exception {
+
+        final var request = get(url)
+                .queryParam("page", String.valueOf(page))
+                .queryParam("perPage", String.valueOf(perPage))
+                .queryParam("sort", sort)
+                .queryParam("dir", direction)
+                .queryParam("search", search);
+
+        return this.mvc().perform(request);
+    }
+
+    private <T> T retrieve(final String url, final Identifier id, final Class<T> clazz) throws Exception {
+
+        final var request = get(url + id.getValue());
+
+        final var json = this.mvc().perform(request)
+                .andDo(print())
+                .andReturn()
+                .getResponse().getContentAsString();
+
+        return Json.readValue(json, clazz);
+    }
+
+    private ResultActions delete(final String url, final Identifier id) throws Exception {
+        final var request = MockMvcRequestBuilders.delete(url, id.getValue());
+        return this.mvc().perform(request);
+    }
+
+    private ResultActions update(final String url, final Identifier id, final Object body) throws Exception {
+        final var request = put(url + id.getValue())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Json.writeValueAsString(body));
+
+        return this.mvc().perform(request);
     }
 
 }
