@@ -15,7 +15,13 @@ public class CastMember extends AggregateRoot<CastMemberID> {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private CastMember(final CastMemberID castMemberID, final String name, final CastMemberType type, final Instant createdAt, final Instant updatedAt) {
+    private CastMember(
+            final CastMemberID castMemberID,
+            final String name,
+            final CastMemberType type,
+            final Instant createdAt,
+            final Instant updatedAt) {
+
         super(castMemberID);
         this.name = name;
         this.type = type;
@@ -27,6 +33,26 @@ public class CastMember extends AggregateRoot<CastMemberID> {
     public static CastMember newMember(final String name, final CastMemberType type) {
         final Instant now = InstantUtils.now();
         return new CastMember(CastMemberID.unique(), name, type, now, now);
+    }
+
+    public static CastMember with(
+            final CastMemberID id,
+            final String name,
+            final CastMemberType type,
+            final Instant createdAt,
+            final Instant updatedAt) {
+
+        return new CastMember(id, name, type, createdAt, updatedAt);
+    }
+
+    public static CastMember clone(final CastMember castMember) {
+        return new CastMember(
+                castMember.id,
+                castMember.getName(),
+                castMember.getType(),
+                castMember.getCreatedAt(),
+                castMember.getUpdatedAt()
+        );
     }
 
     public CastMember update(final String name, final CastMemberType type) {
