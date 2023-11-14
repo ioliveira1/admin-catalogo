@@ -47,7 +47,7 @@ public class ListCastMembersUseCaseTest extends UseCaseTest {
         final var expectedTotal = 2;
 
         final var expectedItems = members.stream()
-                .map(CastMemberListOutput::from)
+                .map(ListCastMemberOutput::from)
                 .toList();
 
         final var expectedPagination = new Pagination<>(
@@ -83,7 +83,7 @@ public class ListCastMembersUseCaseTest extends UseCaseTest {
         final var expectedTotal = 0;
 
         final var members = List.<CastMember>of();
-        final var expectedItems = List.<CastMemberListOutput>of();
+        final var expectedItems = List.<ListCastMemberOutput>of();
 
         final var expectedPagination = new Pagination<>(
                 expectedPage,
