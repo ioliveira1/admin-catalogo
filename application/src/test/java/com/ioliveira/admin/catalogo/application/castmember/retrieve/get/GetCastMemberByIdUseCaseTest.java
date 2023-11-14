@@ -67,9 +67,10 @@ public class GetCastMemberByIdUseCaseTest extends UseCaseTest {
         when(castMemberGateway.findById(any()))
                 .thenReturn(Optional.empty());
 
-        final var output = assertThrows(NotFoundException.class, () -> {
-            useCase.execute(expectedId.getValue());
-        });
+        final var output = assertThrows(
+                NotFoundException.class,
+                () -> useCase.execute(expectedId.getValue())
+        );
 
         assertNotNull(output);
         assertEquals(expectedErrorMessage, output.getMessage());
