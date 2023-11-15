@@ -5,6 +5,7 @@ import com.ioliveira.admin.catalogo.domain.castmember.CastMemberGateway;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberID;
 import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberRepository;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,9 @@ public class CastMemberMySQLGateway implements CastMemberGateway {
 
     @Override
     public CastMember create(final CastMember castMember) {
-        return null;
+        return this.repository
+                .save(CastMemberJpaEntity.from(castMember))
+                .toAggregate();
     }
 
     @Override
