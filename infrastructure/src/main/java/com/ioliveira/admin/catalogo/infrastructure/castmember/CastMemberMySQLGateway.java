@@ -30,7 +30,10 @@ public class CastMemberMySQLGateway implements CastMemberGateway {
 
     @Override
     public void deleteById(final CastMemberID id) {
-
+        final String idValue = id.getValue();
+        if (this.repository.existsById(idValue)) {
+            this.repository.deleteById(idValue);
+        }
     }
 
     @Override
