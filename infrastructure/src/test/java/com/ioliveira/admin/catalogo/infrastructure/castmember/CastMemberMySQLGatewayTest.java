@@ -118,4 +118,38 @@ public class CastMemberMySQLGatewayTest {
         assertEquals(1, repository.count());
     }
 
+    @Test
+    public void givenAValidCastMember_whenCallsFindById_shouldReturnIt() {
+        final var expectedName = Fixture.name();
+        final var expectedType = Fixture.CastMember.type();
+
+        final var member = CastMember.newMember(expectedName, expectedType);
+        final var expectedId = member.getId();
+
+        repository.saveAndFlush(CastMemberJpaEntity.from(member));
+
+        assertEquals(1, repository.count());
+
+        final var actualMember = gateway.findById(expectedId).get();
+
+        assertEquals(expectedId, actualMember.getId());
+        assertEquals(expectedName, actualMember.getName());
+        assertEquals(expectedType, actualMember.getType());
+        assertEquals(member.getCreatedAt(), actualMember.getCreatedAt());
+        assertEquals(member.getUpdatedAt(), actualMember.getUpdatedAt());
+    }
+
+    @Test
+    public void givenAnInvalidId_whenCallsFindById_shouldReturnEmpty() {
+        final var member = CastMember.newMember(Fixture.name(), Fixture.CastMember.type());
+
+        repository.saveAndFlush(CastMemberJpaEntity.from(member));
+
+        assertEquals(1, repository.count());
+
+        final var actualMember = gateway.findById(CastMemberID.from("123"));
+
+        assertTrue(actualMember.isEmpty());
+    }
+
 }
