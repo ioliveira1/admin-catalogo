@@ -40,7 +40,9 @@ public class CastMemberMySQLGateway implements CastMemberGateway {
 
     @Override
     public CastMember update(final CastMember castMember) {
-        return null;
+        return this.repository
+                .save(CastMemberJpaEntity.from(castMember))
+                .toAggregate();
     }
 
     @Override
