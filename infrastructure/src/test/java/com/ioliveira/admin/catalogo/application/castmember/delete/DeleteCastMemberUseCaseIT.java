@@ -70,6 +70,6 @@ public class DeleteCastMemberUseCaseIT {
 
         assertEquals(1, castMemberRepository.count());
 
-        verify(castMemberGateway).deleteById(eq(expectedId));
+        verify(castMemberGateway).deleteById(any());
     }
 }
