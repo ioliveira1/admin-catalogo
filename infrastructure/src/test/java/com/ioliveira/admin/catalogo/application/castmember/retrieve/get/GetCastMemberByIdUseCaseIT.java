@@ -9,6 +9,7 @@ import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -17,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @IntegrationTest
@@ -31,6 +31,11 @@ public class GetCastMemberByIdUseCaseIT {
 
     @SpyBean
     private CastMemberGateway castMemberGateway;
+
+    @BeforeEach
+    void cleanUp() {
+        this.castMemberRepository.deleteAll();
+    }
 
     @Test
     public void givenAValidId_whenCallsGetCastMember_shouldReturnIt() {

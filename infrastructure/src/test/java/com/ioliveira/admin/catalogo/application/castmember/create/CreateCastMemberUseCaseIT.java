@@ -4,6 +4,7 @@ import com.ioliveira.admin.catalogo.Fixture;
 import com.ioliveira.admin.catalogo.IntegrationTest;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberGateway;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -24,6 +25,11 @@ public class CreateCastMemberUseCaseIT {
 
     @Autowired
     private CastMemberRepository castMemberRepository;
+
+    @BeforeEach
+    void cleanUp() {
+        this.castMemberRepository.deleteAll();
+    }
 
     @Test
     public void givenAValidCommand_whenCallsCreateCastMember_shouldReturnIt() {
