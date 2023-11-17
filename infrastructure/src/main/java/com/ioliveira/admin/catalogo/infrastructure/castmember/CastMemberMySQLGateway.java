@@ -7,6 +7,11 @@ import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
 import com.ioliveira.admin.catalogo.domain.pagination.SearchQuery;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberJpaEntity;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberRepository;
+import com.ioliveira.admin.catalogo.infrastructure.utils.SpecificationUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -52,6 +57,28 @@ public class CastMemberMySQLGateway implements CastMemberGateway {
 
     @Override
     public Pagination<CastMember> findAll(final SearchQuery query) {
-        return null;
+        final PageRequest page = PageRequest.of(
+                query.page(),
+                query.perPage(),
+                Sort.by(Sort.Direction.fromString(query.direction()), query.sort())
+        );
+
+        final Specification<CastMemberJpaEntity> specification = Optional.ofNullable(query.terms())
+                .filter(str -> !str.isBlank())
+                .map(this::specification)
+                .orElse(null);
+
+        final Page<CastMemberJpaEntity> pageResult = this.repository.findAll(specification, page);
+
+        return new Pagination<>(
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.map(CastMemberJpaEntity::toAggregate).toList()
+        );
+    }
+
+    private Specification<CastMemberJpaEntity> specification(final String terms) {
+        return SpecificationUtils.like("name", terms);
     }
 }
