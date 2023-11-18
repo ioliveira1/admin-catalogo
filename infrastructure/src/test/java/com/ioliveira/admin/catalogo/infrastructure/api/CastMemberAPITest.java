@@ -16,6 +16,7 @@ import com.ioliveira.admin.catalogo.domain.exceptions.NotFoundException;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.validation.Error;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CreateCastMemberRequest;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.UpdateCastMemberRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
