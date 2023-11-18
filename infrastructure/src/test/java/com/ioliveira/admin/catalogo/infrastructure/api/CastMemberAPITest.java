@@ -8,6 +8,7 @@ import com.ioliveira.admin.catalogo.application.castmember.create.CreateCastMemb
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberID;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import com.ioliveira.admin.catalogo.domain.validation.Error;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CreateCastMemberRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,7 +46,7 @@ public class CastMemberAPITest {
     public void givenAValidCommand_whenCallsCreateCastMember_shouldReturnItsIdentifier() throws Exception {
         final var expectedName = Fixture.name();
         final var expectedType = Fixture.CastMember.type();
-        final var expectedId = CastMemberID.from("o1i2u3i1o");
+        final var expectedId = CastMemberID.from("123");
 
         final var command =
                 new CreateCastMemberRequest(expectedName, expectedType);
