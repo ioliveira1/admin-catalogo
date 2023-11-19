@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.genre;
 
+import com.ioliveira.admin.catalogo.domain.UnitTest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GenreTest {
+public class GenreTest extends UnitTest {
 
     @Test
     public void givenValidParams_whenCallsNewGenre_shouldInstantiateAGenre() {

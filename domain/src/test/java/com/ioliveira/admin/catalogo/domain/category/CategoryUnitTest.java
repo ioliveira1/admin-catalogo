@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.category;
 
+import com.ioliveira.admin.catalogo.domain.UnitTest;
 import com.ioliveira.admin.catalogo.domain.exceptions.DomainException;
 import com.ioliveira.admin.catalogo.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CategoryUnitTest {
+public class CategoryUnitTest extends UnitTest {
 
     @Test
     public void givenValidParams_whenCallsNewCategory_thenInstantiateACategory() {

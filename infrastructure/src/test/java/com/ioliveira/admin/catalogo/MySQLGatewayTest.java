@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo;
 
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -17,6 +18,7 @@ import java.lang.annotation.Target;
 @ActiveProfiles("test-integration")
 @DataJpaTest
 //@ComponentScan("com.ioliveira.admin.catalogo")
+@Tag("integrationTest")
 @ComponentScan(
         basePackages = "com.ioliveira.admin.catalogo",
         includeFilters = {

@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.domain.castmember;
 
+import com.ioliveira.admin.catalogo.domain.UnitTest;
 import com.ioliveira.admin.catalogo.domain.exceptions.NotificationException;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CastMemberTest {
+public class CastMemberTest extends UnitTest {
 
     @Test
     public void givenAValidParams_whenCallsNewMember_thenInstantiateACastMember() {
