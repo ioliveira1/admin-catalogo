@@ -62,9 +62,11 @@ public class CategoryE2ETest {
 
     @DynamicPropertySource
     public static void setDatasourceProperties(final DynamicPropertyRegistry registry) {
+        final Integer mappedPort = MYSQL_CONTAINER.getMappedPort(ORIGINAL_PORT);
+        System.out.println("Container is running on port " + mappedPort);
         registry.add(
                 "mysql.port",
-                () -> MYSQL_CONTAINER.getMappedPort(ORIGINAL_PORT)
+                () -> mappedPort
         );
     }
 
