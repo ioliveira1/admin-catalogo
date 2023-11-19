@@ -6,7 +6,7 @@ on:
       - 'features/**'
       - 'bugfixes/**'
       - 'modules/**'
-      - 'main/**'
+      - 'main'
   workflow_dispatch: #Habilita a execução manual através da interface do Github Actions
 
 jobs:
