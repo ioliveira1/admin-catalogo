@@ -2,6 +2,10 @@ name: CI Pipeline
 
 on:
   push:
+    branches:
+      - 'features/**'
+      - 'bugfixes/**'
+      - 'modules/**'
   workflow_dispatch: #Habilita a execução manual através da interface do Github Actions
 
 jobs:
