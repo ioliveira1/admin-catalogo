@@ -278,7 +278,7 @@ public class CastMemberAPITest {
 
         doNothing().when(deleteCastMemberUseCase).execute(any());
 
-        final var request = delete("/cast_Members/{id}", expectedId);
+        final var request = delete("/cast_members/{id}", expectedId);
 
         this.mvc.perform(request)
                 .andDo(print())
