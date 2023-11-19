@@ -6,7 +6,7 @@ on:
       - 'feature/**'
       - 'bugfix/**'
       #- main
-  #workflow_dispatch: #Habilita a execução manual através da interface do Github Actions
+  workflow_dispatch: #Habilita a execução manual através da interface do Github Actions
 
 jobs:
   # Job para execução dos testes
