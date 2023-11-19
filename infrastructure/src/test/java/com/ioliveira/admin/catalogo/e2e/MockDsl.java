@@ -1,8 +1,11 @@
 package com.ioliveira.admin.catalogo.e2e;
 
 import com.ioliveira.admin.catalogo.domain.Identifier;
+import com.ioliveira.admin.catalogo.domain.castmember.CastMemberID;
+import com.ioliveira.admin.catalogo.domain.castmember.CastMemberType;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.genre.GenreID;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CreateCastMemberRequest;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CategoryResponse;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
@@ -29,6 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public interface MockDsl {
 
     MockMvc mvc();
+
+    /**
+     * Category
+     */
 
     default ResultActions deleteACategory(final Identifier identifier) throws Exception {
         return this.delete("/categories/", identifier);
@@ -63,6 +70,10 @@ public interface MockDsl {
         return this.update("/categories/", id, request);
     }
 
+    /**
+     * Genre
+     */
+
     default void deleteAGenre(final Identifier identifier) throws Exception {
         this.delete("/genres/", identifier);
     }
@@ -82,6 +93,19 @@ public interface MockDsl {
 
     default ResultActions updateAGenre(final Identifier id, final UpdateGenreRequest request) throws Exception {
         return this.update("/genres/", id, request);
+    }
+
+    /**
+     * Cast Member
+     */
+
+    default CastMemberID givenACastMember(final String name, final CastMemberType type) throws Exception {
+        final String id = this.given(
+                "/cast_members",
+                new CreateCastMemberRequest(name, type)
+        );
+
+        return CastMemberID.from(id);
     }
 
     default <IN, OUT> List<OUT> mapTo(final List<IN> list, final Function<IN, OUT> mapper) {

@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -69,6 +70,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToCreateANewCategoryWithValidValues() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;
@@ -91,6 +93,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToNavigateThroughAllCategories() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
         givenACategory("Filmes", null, true);
@@ -133,6 +136,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSearchCategories() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
         givenACategory("Filmes", null, true);
@@ -152,6 +156,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSortAllCategoriesByDescriptionDesc() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, repository.count());
 
         givenACategory("Filmes", "C", true);
@@ -173,6 +178,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSeeATreatedErrorWhenCategoryNotFound() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
 
         assertEquals(0, repository.count());
 
@@ -185,6 +191,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToUpdateACategoryById() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = false;
@@ -217,6 +224,7 @@ public class CategoryE2ETest {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToDeleteACategoryById() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var expectedName = "Filmes";
         final var expectedDescription = "A categoria mais assistida";
         final var expectedIsActive = true;

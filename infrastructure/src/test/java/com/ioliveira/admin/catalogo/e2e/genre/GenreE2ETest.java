@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,6 +75,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToCreateANewGenreWithValidValuesAndEmptyCategories() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var expectedName = "Ação";
         final var expectedCategories = List.<CategoryID>of();
         final var expectedIsActive = true;
@@ -97,6 +99,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToCreateANewGenreWithValidValuesAndCategories() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var filmes = givenACategory("Filmes", null, true);
 
         final var expectedName = "Ação";
@@ -123,6 +126,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToNavigateThroughAllGenres() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, genreRepository.count());
 
         givenAGenre("Ação", List.of(), true);
@@ -165,6 +169,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSearchGenres() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, genreRepository.count());
 
         givenAGenre("Ação", List.of(), true);
@@ -184,6 +189,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSortAllGenresByNameDesc() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, genreRepository.count());
 
         givenAGenre("Ação", List.of(), true);
@@ -205,6 +211,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToGetAGenreById() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, genreRepository.count());
         assertEquals(0, categoryRepository.count());
 
@@ -231,6 +238,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToSeeATreatedErrorWhenGenreNotFound() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
 
         assertEquals(0, genreRepository.count());
 
@@ -243,6 +251,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToUpdateAGenreById() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         final var filmes = givenACategory("Filmes", null, true);
         final var expectedName = "Ação";
         final var expectedCategories = List.of(filmes);
@@ -276,6 +285,7 @@ public class GenreE2ETest implements MockDsl {
 
     @Test
     public void asACatalogAdminIShouldBeAbleToDeleteAGenreById() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
         assertEquals(0, genreRepository.count());
 
         final var expectedName = "Ação";
