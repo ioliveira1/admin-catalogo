@@ -108,6 +108,13 @@ public interface MockDsl {
         return CastMemberID.from(id);
     }
 
+    default ResultActions givenACastMemberWithErrors(final String name, final CastMemberType type) throws Exception {
+        return this.givenWithErrors(
+                "/cast_members",
+                new CreateCastMemberRequest(name, type)
+        );
+    }
+
     default <IN, OUT> List<OUT> mapTo(final List<IN> list, final Function<IN, OUT> mapper) {
         return list.stream()
                 .map(mapper)
@@ -131,6 +138,14 @@ public interface MockDsl {
                         .andExpect(status().isCreated())
                         .andReturn().getResponse().getHeader("Location")
         ).replace("%s/".formatted(url), "");
+    }
+
+    private ResultActions givenWithErrors(final String url, final Object body) throws Exception {
+        final var request = post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Json.writeValueAsString(body));
+
+        return this.mvc().perform(request);
     }
 
     private ResultActions list(final String url, final int page, final int perPage, final String sort, final String direction, final String search) throws Exception {
