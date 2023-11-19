@@ -5,6 +5,7 @@ import com.ioliveira.admin.catalogo.ControllerTest;
 import com.ioliveira.admin.catalogo.Fixture;
 import com.ioliveira.admin.catalogo.application.castmember.create.CreateCastMemberOutput;
 import com.ioliveira.admin.catalogo.application.castmember.create.CreateCastMemberUseCase;
+import com.ioliveira.admin.catalogo.application.castmember.delete.DeleteCastMemberUseCase;
 import com.ioliveira.admin.catalogo.application.castmember.retrieve.get.CastMemberOutput;
 import com.ioliveira.admin.catalogo.application.castmember.retrieve.get.GetCastMemberByIdUseCase;
 import com.ioliveira.admin.catalogo.application.castmember.update.UpdateCastMemberOutput;
@@ -31,8 +32,10 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -58,6 +61,9 @@ public class CastMemberAPITest {
 
     @MockBean
     private UpdateCastMemberUseCase updateCastMemberUseCase;
+
+    @MockBean
+    private DeleteCastMemberUseCase deleteCastMemberUseCase;
 
     @Test
     public void givenAValidCommand_whenCallsCreateCastMember_shouldReturnItsIdentifier() throws Exception {
@@ -264,6 +270,21 @@ public class CastMemberAPITest {
                         && Objects.equals(expectedName, actualCmd.name())
                         && Objects.equals(expectedType, actualCmd.type())
         ));
+    }
+
+    @Test
+    public void givenAValidId_whenCallsDeleteCastMember_shouldReturnNoContent() throws Exception {
+        final var expectedId = "123";
+
+        doNothing().when(deleteCastMemberUseCase).execute(any());
+
+        final var request = delete("/cast_Members/{id}", expectedId);
+
+        this.mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(deleteCastMemberUseCase).execute(any());
     }
 
 }
