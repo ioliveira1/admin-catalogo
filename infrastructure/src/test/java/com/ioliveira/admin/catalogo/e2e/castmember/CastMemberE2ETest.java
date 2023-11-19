@@ -5,6 +5,7 @@ import com.ioliveira.admin.catalogo.Fixture;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberID;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberType;
 import com.ioliveira.admin.catalogo.e2e.MockDsl;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.UpdateCastMemberRequest;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.persistence.CastMemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -212,6 +214,51 @@ public class CastMemberE2ETest implements MockDsl {
         retrieveACastMemberWithErrors(CastMemberID.from("123"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", equalTo("CastMember with ID 123 was not found")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToUpdateACastMemberByItsIdentifier() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
+        assertEquals(0, castMemberRepository.count());
+
+        final var expectedName = "Vin Diesel";
+        final var expectedType = CastMemberType.ACTOR;
+
+        givenACastMember(Fixture.name(), Fixture.CastMember.type());
+        final var actualId = givenACastMember("vin d", CastMemberType.DIRECTOR);
+
+        final var requestBody = new UpdateCastMemberRequest(expectedName, expectedType);
+
+        updateACastMember(actualId, requestBody)
+                .andExpect(status().isOk());
+
+        final var actualMember = retrieveACastMember(actualId);
+
+        assertEquals(expectedName, actualMember.name());
+        assertEquals(expectedType.name(), actualMember.type());
+        assertNotNull(actualMember.createdAt());
+        assertNotNull(actualMember.updatedAt());
+        assertNotEquals(actualMember.createdAt(), actualMember.updatedAt());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToSeeATreatedErrorByUpdatingACastMemberWithInvalidValue() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
+        assertEquals(0, castMemberRepository.count());
+
+        final var expectedName = "";
+        final var expectedType = CastMemberType.ACTOR;
+        final var expectedErrorMessage = "'name' should not be empty";
+
+        givenACastMember(Fixture.name(), Fixture.CastMember.type());
+        final var actualId = givenACastMember("vin d", CastMemberType.DIRECTOR);
+
+        final var requestBody = new UpdateCastMemberRequest(expectedName, expectedType);
+
+        updateACastMember(actualId, requestBody)
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
     }
 
 }

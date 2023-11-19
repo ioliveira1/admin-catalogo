@@ -7,6 +7,7 @@ import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.domain.genre.GenreID;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CastMemberResponse;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CreateCastMemberRequest;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.UpdateCastMemberRequest;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CategoryResponse;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CreateCategoryRequest;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.UpdateCategoryRequest;
@@ -134,6 +135,10 @@ public interface MockDsl {
 
     default ResultActions retrieveACastMemberWithErrors(final CastMemberID id) throws Exception {
         return this.retrieveWithErrors("/cast_members/", id);
+    }
+
+    default ResultActions updateACastMember(final CastMemberID id, final UpdateCastMemberRequest request) throws Exception {
+        return this.update("/cast_members/", id, request);
     }
 
     default <IN, OUT> List<OUT> mapTo(final List<IN> list, final Function<IN, OUT> mapper) {
