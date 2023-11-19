@@ -1,5 +1,7 @@
 package com.ioliveira.admin.catalogo.infrastructure.api;
 
+import com.ioliveira.admin.catalogo.domain.pagination.Pagination;
+import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CastMemberListResponse;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CastMemberResponse;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.CreateCastMemberRequest;
 import com.ioliveira.admin.catalogo.infrastructure.castmember.models.UpdateCastMemberRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RequestMapping(value = "cast_members")
@@ -43,6 +46,21 @@ public interface CastMemberAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown"),
     })
     CastMemberResponse getById(@PathVariable(name = "id") final String id);
+
+    @GetMapping
+    @Operation(summary = "List all cast members paginated")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listed successfully"),
+            @ApiResponse(responseCode = "422", description = "An invalid parameter was received"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown"),
+    })
+    Pagination<CastMemberListResponse> listCastMembers(
+            @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
+            @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+    );
 
     @PutMapping(value = "{id}")
     @Operation(summary = "Update a cast member by id")

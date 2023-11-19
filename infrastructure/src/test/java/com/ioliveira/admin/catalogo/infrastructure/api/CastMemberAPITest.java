@@ -8,6 +8,7 @@ import com.ioliveira.admin.catalogo.application.castmember.create.CreateCastMemb
 import com.ioliveira.admin.catalogo.application.castmember.delete.DeleteCastMemberUseCase;
 import com.ioliveira.admin.catalogo.application.castmember.retrieve.get.CastMemberOutput;
 import com.ioliveira.admin.catalogo.application.castmember.retrieve.get.GetCastMemberByIdUseCase;
+import com.ioliveira.admin.catalogo.application.castmember.retrieve.list.ListCastMemberOutput;
 import com.ioliveira.admin.catalogo.application.castmember.retrieve.list.ListCastMembersUseCase;
 import com.ioliveira.admin.catalogo.application.castmember.update.UpdateCastMemberOutput;
 import com.ioliveira.admin.catalogo.application.castmember.update.UpdateCastMemberUseCase;
@@ -306,7 +307,7 @@ public class CastMemberAPITest {
         final var expectedItemsCount = 1;
         final var expectedTotal = 1;
 
-        final var expectedItems = List.of(CastMemberListOutput.from(member));
+        final var expectedItems = List.of(ListCastMemberOutput.from(member));
 
         when(listCastMembersUseCase.execute(any()))
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
@@ -352,7 +353,7 @@ public class CastMemberAPITest {
         final var expectedItemsCount = 1;
         final var expectedTotal = 1;
 
-        final var expectedItems = List.of(CastMemberListOutput.from(member));
+        final var expectedItems = List.of(ListCastMemberOutput.from(member));
 
         when(listCastMembersUseCase.execute(any()))
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
