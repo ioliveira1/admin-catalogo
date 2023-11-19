@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -259,6 +260,39 @@ public class CastMemberE2ETest implements MockDsl {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToDeleteACastMemberByItsIdentifier() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
+        assertEquals(0, castMemberRepository.count());
+
+        givenACastMember(Fixture.name(), Fixture.CastMember.type());
+        final var actualId = givenACastMember(Fixture.name(), Fixture.CastMember.type());
+
+        assertEquals(2, castMemberRepository.count());
+
+        deleteACastMember(actualId)
+                .andExpect(status().isNoContent());
+
+        assertEquals(1, castMemberRepository.count());
+        assertFalse(castMemberRepository.existsById(actualId.getValue()));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToDeleteACastMemberWithInvalidIdentifier() throws Exception {
+        assertTrue(MYSQL_CONTAINER.isRunning());
+        assertEquals(0, castMemberRepository.count());
+
+        givenACastMember(Fixture.name(), Fixture.CastMember.type());
+        givenACastMember(Fixture.name(), Fixture.CastMember.type());
+
+        assertEquals(2, castMemberRepository.count());
+
+        deleteACastMember(CastMemberID.from("123"))
+                .andExpect(status().isNoContent());
+
+        assertEquals(2, castMemberRepository.count());
     }
 
 }

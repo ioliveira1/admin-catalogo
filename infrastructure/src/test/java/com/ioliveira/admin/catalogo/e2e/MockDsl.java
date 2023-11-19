@@ -101,6 +101,10 @@ public interface MockDsl {
      * Cast Member
      */
 
+    default ResultActions deleteACastMember(final CastMemberID id) throws Exception {
+        return this.delete("/cast_members/", id);
+    }
+
     default CastMemberID givenACastMember(final String name, final CastMemberType type) throws Exception {
         final String id = this.given(
                 "/cast_members",
