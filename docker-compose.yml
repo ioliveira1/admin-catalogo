@@ -4,6 +4,7 @@ services:
   app:
     container_name: adm_videos_app
     build: .
+    #image: ioliveira1/admin-catalogo:main-3
     profiles: ["app"]
     restart: unless-stopped
     env_file:
