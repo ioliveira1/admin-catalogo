@@ -4,7 +4,7 @@ services:
   app:
     container_name: adm_videos_app
     build: .
-    #image: ioliveira1/admin-catalogo:main-3
+    #image: ioliveira1/admin-catalogo:main-3 # Executa docker compose com a imagem criada pelo ci-cd
     profiles: ["app"]
     restart: unless-stopped
     env_file:
