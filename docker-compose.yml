@@ -5,25 +5,32 @@ services:
     container_name: adm_videos_app
     build: .
     #image: ioliveira1/admin-catalogo:main-3 # Executa docker compose com a imagem criada pelo ci-cd
-    profiles: ["app"]
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - adm_videos_network
 
   mysql:
     container_name: adm_videos_mysql
     image: mysql:latest
+    volumes:
+      - ./.mysql/dbdata:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=adm_videos
     security_opt:
       - seccomp:unconfined
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
     ports:
       - "3306:3306"
     networks:
@@ -35,12 +42,39 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=mysql
+      - KC_DB_URL=jdbc:mysql://keycloak_db:3307/keycloak
+      - KC_DB_USERNAME=root
+      - KC_DB_PASSWORD=root
     ports:
-      - "8090:8080"
-    command:
-      - start-dev
+      - "8888:8888"
+    command: ["start-dev", "--http-port=8888"]
+    depends_on:
+      keycloak_db:
+        condition: service_healthy
     networks:
       - adm_videos_network
+
+  keycloak_db:
+    image: mysql:latest
+    container_name: keycloak_db
+    volumes:
+      - ./.keycloak:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_TCP_PORT=3307
+    ports:
+      - "3307:3307"
+    security_opt:
+      - seccomp:unconfined
+    networks:
+      - adm_videos_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
 
 
 networks:
