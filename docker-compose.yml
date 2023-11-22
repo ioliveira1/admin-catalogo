@@ -4,12 +4,12 @@ services:
   app:
     container_name: adm_videos_app
     build: .
-    #image: ioliveira1/admin-catalogo:main-3 # Executa docker compose com a imagem criada pelo ci-cd
+    #image: ioliveira1/admin-catalogo:main-'NR_VERSION' # Executa docker compose com a imagem criada pelo ci-cd
     restart: unless-stopped
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       mysql:
         condition: service_healthy
@@ -20,7 +20,7 @@ services:
     container_name: adm_videos_mysql
     image: mysql:latest
     volumes:
-      - ./.mysql/dbdata:/var/lib/mysql
+      - ./.docker/mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=adm_videos
@@ -59,7 +59,7 @@ services:
     image: mysql:latest
     container_name: keycloak_db
     volumes:
-      - ./.keycloak:/var/lib/mysql
+      - ./.docker/keycloak:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=keycloak
@@ -75,7 +75,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-
 
 networks:
   adm_videos_network:

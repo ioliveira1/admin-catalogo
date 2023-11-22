@@ -4,8 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 .env
-.keycloak
-.mysql
+.docker
 
 ### IntelliJ IDEA ###
 .idea
