@@ -21,8 +21,9 @@ import java.lang.annotation.Target;
 @Tag("integrationTest")
 @ComponentScan(
         basePackages = "com.ioliveira.admin.catalogo",
+        useDefaultFilters = false,
         includeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".[MySQLGateway]")
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*MySQLGateway")
         })
 public @interface MySQLGatewayTest {
 }

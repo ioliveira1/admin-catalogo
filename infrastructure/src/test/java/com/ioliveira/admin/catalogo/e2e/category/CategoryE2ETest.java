@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.e2e.category;
 
+import com.ioliveira.admin.catalogo.ApiTest;
 import com.ioliveira.admin.catalogo.E2ETest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.infrastructure.category.models.CategoryResponse;
@@ -184,7 +185,8 @@ public class CategoryE2ETest {
 
         assertEquals(0, repository.count());
 
-        final var request = get("/categories/123");
+        final var request = get("/categories/123")
+                .with(ApiTest.ADMIN_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -207,6 +209,7 @@ public class CategoryE2ETest {
         final var requestBody = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
         final var request = put("/categories/{id}", id.getValue())
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(requestBody));
 
@@ -237,7 +240,8 @@ public class CategoryE2ETest {
 
         assertEquals(1, repository.count());
 
-        final var request = delete("/categories/{id}", id.getValue());
+        final var request = delete("/categories/{id}", id.getValue())
+                .with(ApiTest.ADMIN_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -263,6 +267,7 @@ public class CategoryE2ETest {
     ) throws Exception {
 
         final var request = get("/categories")
+                .with(ApiTest.ADMIN_JWT)
                 .queryParam("page", String.valueOf(page))
                 .queryParam("perPage", String.valueOf(perPage))
                 .queryParam("sort", sort)
@@ -277,6 +282,7 @@ public class CategoryE2ETest {
         final var requestBody = new CreateCategoryRequest(name, description, isActive);
 
         final var request = post("/categories")
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(requestBody));
 
@@ -293,7 +299,8 @@ public class CategoryE2ETest {
 
     private CategoryResponse retrieveACategory(final String id) throws Exception {
 
-        final var request = get("/categories/{id}", id);
+        final var request = get("/categories/{id}", id)
+                .with(ApiTest.ADMIN_JWT);
 
         final var json = this.mvc.perform(request)
                 .andDo(print())

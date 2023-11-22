@@ -1,6 +1,7 @@
 package com.ioliveira.admin.catalogo.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ioliveira.admin.catalogo.ApiTest;
 import com.ioliveira.admin.catalogo.ControllerTest;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreOutput;
 import com.ioliveira.admin.catalogo.application.genre.create.CreateGenreUseCase;
@@ -85,6 +86,7 @@ public class GenreAPITest {
                 .thenReturn(CreateGenreOutput.from("123"));
 
         final var request = post("/genres")
+                .with(ApiTest.GENRES_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(createGenreRequest));
 
@@ -114,6 +116,7 @@ public class GenreAPITest {
                 .thenThrow(new NotificationException("Error", Notification.create(new Error(expectedErrorMessage))));
 
         final var request = post("/genres")
+                .with(ApiTest.GENRES_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(createGenreRequest));
 
@@ -150,7 +153,8 @@ public class GenreAPITest {
         when(getGenreByIdUseCase.execute(any()))
                 .thenReturn(GenreOutput.from(genre));
 
-        final var request = get("/genres/{id}", expectedId);
+        final var request = get("/genres/{id}", expectedId)
+                .with(ApiTest.GENRES_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -175,7 +179,8 @@ public class GenreAPITest {
         when(getGenreByIdUseCase.execute(any()))
                 .thenThrow(NotFoundException.with(Genre.class, expectedId));
 
-        final var request = get("/genres/{id}", expectedId.getValue());
+        final var request = get("/genres/{id}", expectedId.getValue())
+                .with(ApiTest.GENRES_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -200,6 +205,7 @@ public class GenreAPITest {
                 .thenReturn(UpdateGenreOutput.from(genre));
 
         final var request = put("/genres/{id}", expectedId)
+                .with(ApiTest.GENRES_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(updateGenreRequest));
 
@@ -226,6 +232,7 @@ public class GenreAPITest {
                 .thenThrow(new NotificationException("Error", Notification.create(new Error(expectedErrorMessage))));
 
         final var request = put("/genres/{id}", "123")
+                .with(ApiTest.GENRES_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(updateGenreRequest));
 
@@ -248,7 +255,8 @@ public class GenreAPITest {
 
         doNothing().when(deleteGenreUseCase).execute(any());
 
-        final var request = delete("/genres/{id}", expectedId);
+        final var request = delete("/genres/{id}", expectedId)
+                .with(ApiTest.GENRES_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -263,7 +271,8 @@ public class GenreAPITest {
 
         doNothing().when(deleteGenreUseCase).execute(any());
 
-        final var request = delete("/genres/{id}", expectedId);
+        final var request = delete("/genres/{id}", expectedId)
+                .with(ApiTest.GENRES_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -290,6 +299,7 @@ public class GenreAPITest {
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
 
         final var request = get("/genres")
+                .with(ApiTest.GENRES_JWT)
                 .queryParam("page", String.valueOf(expectedPage))
                 .queryParam("perPage", String.valueOf(expectedPerPage))
                 .queryParam("sort", expectedSort)

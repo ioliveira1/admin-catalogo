@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.e2e.genre;
 
+import com.ioliveira.admin.catalogo.ApiTest;
 import com.ioliveira.admin.catalogo.E2ETest;
 import com.ioliveira.admin.catalogo.domain.category.CategoryID;
 import com.ioliveira.admin.catalogo.e2e.MockDsl;
@@ -244,7 +245,8 @@ public class GenreE2ETest implements MockDsl {
 
         assertEquals(0, genreRepository.count());
 
-        final var request = get("/genres/123");
+        final var request = get("/genres/123")
+                .with(ApiTest.ADMIN_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -320,6 +322,7 @@ public class GenreE2ETest implements MockDsl {
     ) throws Exception {
 
         final var request = get("/genres")
+                .with(ApiTest.ADMIN_JWT)
                 .queryParam("page", String.valueOf(page))
                 .queryParam("perPage", String.valueOf(perPage))
                 .queryParam("sort", sort)

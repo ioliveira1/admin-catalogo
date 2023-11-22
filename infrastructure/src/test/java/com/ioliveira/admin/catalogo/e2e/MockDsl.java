@@ -1,5 +1,6 @@
 package com.ioliveira.admin.catalogo.e2e;
 
+import com.ioliveira.admin.catalogo.ApiTest;
 import com.ioliveira.admin.catalogo.domain.Identifier;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberID;
 import com.ioliveira.admin.catalogo.domain.castmember.CastMemberType;
@@ -159,6 +160,7 @@ public interface MockDsl {
 
     private String given(final String url, final Object body) throws Exception {
         final var request = post(url)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(body));
 
@@ -172,6 +174,7 @@ public interface MockDsl {
 
     private ResultActions givenWithErrors(final String url, final Object body) throws Exception {
         final var request = post(url)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(body));
 
@@ -182,6 +185,7 @@ public interface MockDsl {
     private ResultActions list(final String url, final int page, final int perPage, final String sort, final String direction, final String search) throws Exception {
 
         final var request = get(url)
+                .with(ApiTest.ADMIN_JWT)
                 .queryParam("page", String.valueOf(page))
                 .queryParam("perPage", String.valueOf(perPage))
                 .queryParam("sort", sort)
@@ -194,6 +198,7 @@ public interface MockDsl {
     private <T> T retrieve(final String url, final Identifier id, final Class<T> clazz) throws Exception {
 
         final var request = get(url + id.getValue())
+                .with(ApiTest.ADMIN_JWT)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
 
@@ -208,6 +213,7 @@ public interface MockDsl {
     private ResultActions retrieveWithErrors(final String url, final Identifier id) throws Exception {
 
         final var request = get(url + id.getValue())
+                .with(ApiTest.ADMIN_JWT)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
 
@@ -216,12 +222,14 @@ public interface MockDsl {
     }
 
     private ResultActions delete(final String url, final Identifier id) throws Exception {
-        final var request = MockMvcRequestBuilders.delete(url + id.getValue());
+        final var request = MockMvcRequestBuilders.delete(url + id.getValue())
+                .with(ApiTest.ADMIN_JWT);
         return this.mvc().perform(request);
     }
 
     private ResultActions update(final String url, final Identifier id, final Object body) throws Exception {
         final var request = put(url + id.getValue())
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(body));
 

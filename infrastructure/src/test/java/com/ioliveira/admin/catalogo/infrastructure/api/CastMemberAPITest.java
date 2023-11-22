@@ -1,6 +1,7 @@
 package com.ioliveira.admin.catalogo.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ioliveira.admin.catalogo.ApiTest;
 import com.ioliveira.admin.catalogo.ControllerTest;
 import com.ioliveira.admin.catalogo.Fixture;
 import com.ioliveira.admin.catalogo.application.castmember.create.CreateCastMemberOutput;
@@ -85,6 +86,8 @@ public class CastMemberAPITest {
                 .thenReturn(CreateCastMemberOutput.from(expectedId));
 
         final var request = post("/cast_members")
+                .with(ApiTest.CAST_MEMBERS_JWT)
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(command));
 
@@ -116,6 +119,7 @@ public class CastMemberAPITest {
                 .thenThrow(NotificationException.with(new Error(expectedErrorMessage)));
 
         final var request = post("/cast_members")
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(command));
 
@@ -145,6 +149,7 @@ public class CastMemberAPITest {
                 .thenReturn(CastMemberOutput.from(member));
 
         final var request = get("/cast_members/{id}", expectedId)
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .accept(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -169,6 +174,7 @@ public class CastMemberAPITest {
                 .thenThrow(NotFoundException.with(CastMember.class, expectedId));
 
         final var request = get("/cast_members/{id}", expectedId.getValue())
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .accept(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -195,6 +201,7 @@ public class CastMemberAPITest {
                 .thenReturn(UpdateCastMemberOutput.from(expectedId));
 
         final var request = put("/cast_members/{id}", expectedId.getValue())
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(command));
 
@@ -228,6 +235,7 @@ public class CastMemberAPITest {
                 .thenThrow(NotificationException.with(new Error(expectedErrorMessage)));
 
         final var request = put("/cast_members/{id}", expectedId.getValue())
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(command));
 
@@ -262,6 +270,7 @@ public class CastMemberAPITest {
                 .thenThrow(NotFoundException.with(CastMember.class, expectedId));
 
         final var request = put("/cast_members/{id}", expectedId.getValue())
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(command));
 
@@ -285,7 +294,8 @@ public class CastMemberAPITest {
 
         doNothing().when(deleteCastMemberUseCase).execute(any());
 
-        final var request = delete("/cast_members/{id}", expectedId);
+        final var request = delete("/cast_members/{id}", expectedId)
+                .with(ApiTest.CAST_MEMBERS_JWT);
 
         this.mvc.perform(request)
                 .andDo(print())
@@ -313,6 +323,7 @@ public class CastMemberAPITest {
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
 
         final var request = get("/cast_members")
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .queryParam("page", String.valueOf(expectedPage))
                 .queryParam("perPage", String.valueOf(expectedPerPage))
                 .queryParam("search", expectedTerms)
@@ -359,6 +370,7 @@ public class CastMemberAPITest {
                 .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedItems));
 
         final var request = get("/cast_members")
+                .with(ApiTest.CAST_MEMBERS_JWT)
                 .accept(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
