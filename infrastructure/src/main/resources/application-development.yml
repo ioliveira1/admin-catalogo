@@ -4,13 +4,8 @@ mysql:
   schema: adm_videos
   url: localhost:3306
 
-keycloak:
-  realm: codeflix
-  host: http://localhost:8888
-
-server:
-  port: 8081
-  undertow:
-    threads:
-      worker: 64 # Generally this should be reasonably high, at least 10 per CPU core: https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#listeners-2
-      io: 4 # One IO thread per CPU core is a reasonable default: https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#listeners-2
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
