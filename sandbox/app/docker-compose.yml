@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+#  app:
+#    container_name: adm_videos_app
+#    build: ../..
+#    #image: ioliveira1/admin-catalogo:main-'NR_VERSION' # Executa docker compose com a imagem criada pelo ci-cd
+#    restart: unless-stopped
+#    env_file:
+#      - ../../.env
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+#    networks:
+#      - adm_videos_network
+
+  mysql:
+    container_name: adm_videos_mysql
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: adm_videos
+      MYSQL_ROOT_HOST: '%' # Permite root connections (localhost, mysql, etc.) de outros hosts e não somente de dentro do container https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-more-topics.html#docker_var_mysql-root-host
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - ../.docker/mysql:/var/lib/mysql:rw
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+#      interval: 10s
+#      timeout: 10s
+#      retries: 3
+    ports:
+      - "3306:3306"
+    networks:
+      - adm_videos_network
+
+  keycloak:
+    container_name: adm_videos_keycloak
+    image: quay.io/keycloak/keycloak:22.0.5
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8888:8888"
+    command: ["start-dev", "--http-port=8888"]
+    volumes:
+      - ../.docker/keycloak:/opt/keycloak/data/h2:rw
+    networks:
+      - adm_videos_network
+
+networks:
+  adm_videos_network:
