@@ -25,7 +25,8 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - "8888:8888"
-    command: ["start-dev", "--http-port=8888"]
+    #command: ["start-dev", "--http-port=8888"] # Utilizar quando a aplicação for executada fora do Docker
+    command: ["start-dev", "--http-port=8888", "--hostname-url=http://keycloak:8888"] # Utilizar quando a aplicação for executada pelo docker compose
     volumes:
       - ../.docker/keycloak:/opt/keycloak/data/h2:rw
     networks:
